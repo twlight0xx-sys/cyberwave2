@@ -1,68 +1,285 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>CyberWave | Hub</title>
+    <meta charset="UTF-8">
+    <title>CYBERWAVE // TERMINAL_v2.0</title>
     <style>
-        /* CSS - The Design */
-        body { background: #0a0a0c; color: #e0e0e0; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        nav { background: #000; padding: 15px; border-bottom: 2px solid #00f2ff; display: flex; justify-content: space-between; }
-        .logo { font-weight: bold; letter-spacing: 2px; }
-        .logo span { color: #00f2ff; }
-        .main { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 300px; background: #141418; border-right: 1px solid #333; display: flex; flex-direction: column; padding: 15px; }
-        #chat { flex: 1; background: #000; overflow-y: auto; padding: 10px; margin-bottom: 10px; border-radius: 5px; font-size: 14px; }
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .card { background: #141418; padding: 15px; border-radius: 8px; border: 1px solid #333; text-align: center; }
-        input { background: #222; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; width: 80%; margin-bottom: 10px; }
-        button { background: #00f2ff; color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        /* HACKER AESTHETIC */
+        body, html {
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        /* SCANLINE ANIMATION */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 255, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
+            z-index: 100;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 101;
+            background: linear-gradient(0deg, rgba(0, 255, 0, 0) 0%, rgba(0, 255, 0, 0.2) 50%, rgba(0, 255, 0, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { bottom: 100%; }
+            100% { bottom: -100%; }
+        }
+
+        /* LOGIN OVERLAY */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            border: 1px solid #0f0;
+            padding: 30px;
+            background: rgba(0, 20, 0, 0.9);
+            box-shadow: 0 0 20px #0f0;
+            text-align: center;
+        }
+
+        input {
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            outline: none;
+        }
+
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        button:hover { background: #000; color: #0f0; border: 1px solid #0f0; }
+
+        /* MAIN INTERFACE */
+        #main-ui { display: none; height: 100vh; grid-template-columns: 250px 1fr; }
+
+        .sidebar {
+            border-right: 1px solid #0f0;
+            padding: 20px;
+            display: flex; flex-direction: column;
+            background: rgba(0, 10, 0, 0.8);
+        }
+
+        .content { padding: 20px; overflow-y: auto; }
+
+        /* COLLAPSIBLE */
+        .collapsible {
+            background: none;
+            color: #0f0;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #0f0;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .active, .collapsible:hover { background: #004400; }
+
+        .proxy-list {
+            display: none;
+            padding: 10px;
+            border: 1px solid #0f0;
+            border-top: none;
+        }
+
+        .proxy-link {
+            display: block;
+            color: #0f0;
+            text-decoration: none;
+            padding: 5px 0;
+            font-size: 14px;
+        }
+
+        .proxy-link:hover { text-decoration: underline; }
+
+        /* ADMIN/OWNER PANEL */
+        #owner-panel {
+            margin-top: auto;
+            border: 1px solid #f00;
+            padding: 10px;
+            color: #f00;
+            display: none;
+        }
+
+        .status-msg { font-size: 12px; margin-bottom: 10px; }
+
     </style>
 </head>
 <body>
 
-<nav>
-    <div class="logo">CYBER<span>WAVE</span></div>
-    <div>Status: Online</div>
-</nav>
+<div class="scanline"></div>
 
-<div class="main">
+<div id="login-screen">
+    <div class="login-box">
+        <h2 id="login-title">SYSTEM_LOGIN</h2>
+        <p class="status-msg" id="msg">Awaiting Credentials...</p>
+        <input type="text" id="usr" placeholder="USERNAME">
+        <input type="password" id="pwd" placeholder="PASSWORD">
+        <br>
+        <button onclick="login()">LOGIN</button>
+        <button onclick="register()">SIGN_UP</button>
+    </div>
+</div>
+
+<div id="main-ui">
     <div class="sidebar">
-        <h3>Live Chat</h3>
-        <div id="chat"></div>
-        <input type="text" id="m" placeholder="Message...">
-        <button onclick="send()">Send</button>
+        <h3>CYBERWAVE_SYS</h3>
+        <p id="user-display" style="font-size: 12px;"></p>
+        
+        <button class="collapsible">>> PROXY_NETWORK</button>
+        <div class="proxy-list">
+            <a href="#" class="proxy-link">Overcloaked</a>
+            <a href="#" class="proxy-link">DayDream X</a>
+            <a href="#" class="proxy-link">Interstellar</a>
+            <a href="#" class="proxy-link">Utopia</a>
+            <a href="#" class="proxy-link">Vapor V4</a>
+            <a href="#" class="proxy-link">Shadow</a>
+        </div>
+
+        <div id="owner-panel">
+            <h4>[OWNER_COMMAND]</h4>
+            <input type="text" id="ban-user" placeholder="Username to Ban" style="border-color: #f00; color: #f00; width: 90%;">
+            <button onclick="banUser()" style="background: #f00; color: #000; width: 100%;">TERMINATE_USER</button>
+        </div>
     </div>
 
     <div class="content">
-        <h2>Community Mirrors</h2>
-        <div style="margin-bottom: 20px; background: #141418; padding: 15px; border-radius: 8px;">
-            <input type="text" id="n" placeholder="Site Name">
-            <input type="text" id="u" placeholder="URL">
-            <button onclick="add()">Add Site</button>
-        </div>
-        <div class="grid" id="g">
-            <div class="card"><h4>Vapor</h4><button onclick="window.open('#')">Launch</button></div>
-            <div class="card"><h4>Waves</h4><button onclick="window.open('#')">Launch</button></div>
-        </div>
+        <h2>CENTRAL_DATABASE</h2>
+        <hr border="1" color="#0f0">
+        <p>> Connection established...</p>
+        <p>> Welcome to CyberWave, <span id="welcome-name"></span>.</p>
+        <br>
+        <button onclick="logout()">LOGOUT_SESSION</button>
     </div>
 </div>
 
 <script>
-    /* JS - The Logic */
-    function send() {
-        let i = document.getElementById('m');
-        if(i.value) {
-            document.getElementById('chat').innerHTML += `<p><strong>You:</strong> ${i.value}</p>`;
-            i.value = '';
+    // PRESET ACCOUNTS
+    const admins = {};
+    for(let i=1; i<=10; i++){
+        admins[`admin${i}`] = `cyberwave${i}`;
+    }
+    
+    const OWNER = "_techrobyte";
+    const OWNER_PWD = "techyy";
+
+    // COLLAPSIBLE LOGIC
+    var coll = document.getElementsByClassName("collapsible");
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+
+    function login() {
+        const u = document.getElementById('usr').value;
+        const p = document.getElementById('pwd').value;
+        const msg = document.getElementById('msg');
+
+        // Check if Banned
+        if(localStorage.getItem('ban_' + u)) {
+            msg.innerText = "ACCESS_DENIED: USER_TERMINATED";
+            return;
+        }
+
+        // Owner Login
+        if (u === OWNER && p === OWNER_PWD) {
+            enterApp(u, true);
+            return;
+        }
+
+        // Admin Login
+        if (admins[u] && admins[u] === p) {
+            enterApp(u, false);
+            return;
+        }
+
+        // Regular User Login (from LocalStorage)
+        const savedPwd = localStorage.getItem('user_' + u);
+        if (savedPwd && savedPwd === p) {
+            enterApp(u, false);
+        } else {
+            msg.innerText = "ERROR: INVALID_CREDENTIALS";
         }
     }
-    function add() {
-        let n = document.getElementById('n').value;
-        let u = document.getElementById('u').value;
-        if(n && u) {
-            document.getElementById('g').innerHTML += `<div class="card"><h4>${n}</h4><button onclick="window.open('${u}')">Launch</button></div>`;
-            document.getElementById('n').value = ''; document.getElementById('u').value = '';
+
+    function register() {
+        const u = document.getElementById('usr').value;
+        const p = document.getElementById('pwd').value;
+        const msg = document.getElementById('msg');
+
+        if(u.length < 3) { msg.innerText = "ERROR: NAME_TOO_SHORT"; return; }
+        if(localStorage.getItem('user_' + u) || admins[u] || u === OWNER) {
+            msg.innerText = "ERROR: USER_EXISTS";
+        } else {
+            localStorage.setItem('user_' + u, p);
+            msg.innerText = "SUCCESS: USER_REGISTERED";
         }
+    }
+
+    function enterApp(name, isOwner) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-ui').style.display = 'grid';
+        document.getElementById('welcome-name').innerText = name;
+        document.getElementById('user-display').innerText = "Logged in as: " + name;
+        
+        if(isOwner) {
+            document.getElementById('owner-panel').style.display = 'block';
+        }
+    }
+
+    function banUser() {
+        const target = document.getElementById('ban-user').value;
+        if(target === OWNER) { alert("Cannot ban owner."); return; }
+        localStorage.setItem('ban_' + target, "true");
+        alert("User " + target + " has been terminated.");
+    }
+
+    function logout() {
+        location.reload();
     }
 </script>
 
