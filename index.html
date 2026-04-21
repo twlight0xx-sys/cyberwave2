@@ -23,7 +23,6 @@
         input { width: 100%; padding: 12px; background: #000; border: 1px solid #1a2234; color: #fff; border-radius: 6px; margin-bottom: 10px; outline: none; }
         .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; cursor: pointer; border: 2px solid var(--green); background: transparent; color: var(--green); font-weight: bold; transition: 0.2s; }
         .btn-login { border-color: var(--blue); color: var(--blue); }
-        .btn:active { transform: scale(0.95); }
 
         /* Sidebar & Layout */
         #app { display: none; height: 100vh; width: 100%; position: relative; }
@@ -59,7 +58,7 @@
 <div id="login-screen">
     <div class="login-box pop">
         <h1>$ Cyberwave</h1>
-        <p style="color:#444; font-size:10px; margin-top:-10px;">SECURE_KERNEL V3.0</p>
+        <p style="color:#444; font-size:10px; margin-top:-10px;">SECURE_KERNEL V3.2</p>
         <label>> IDENTITY</label>
         <input type="text" id="u" placeholder="..." autocomplete="off">
         <label>> SEC_STRING</label>
@@ -82,7 +81,7 @@
             <h1 style="margin-bottom: 30px;">Network Exit Nodes</h1>
             <div class="collapsible">
                 <div class="collapsible-header" onclick="toggle()">
-                    <span style="color:var(--blue);">⚡ OVERCLOAKED [ENCRYPTED]</span>
+                    <span style="color:var(--blue);">⚡ OVERCLOAKED</span>
                     <span id="arr">▼</span>
                 </div>
                 <div class="collapsible-content" id="p-list">
@@ -93,10 +92,6 @@
                     <div class="proxy-row">
                         <span>Stealth Node 02</span>
                         <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launch('aHR0cHM6Ly9tYXRoZWR1Lm5ldGNyeXB0by5vcmcv')">OPEN</button>
-                    </div>
-                    <div class="proxy-row">
-                        <span>Titan Tunnel</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launch('aHR0cHM6Ly9yYXJpcmlwc2NrLnZuZ2Vlay5jb20v')">OPEN</button>
                     </div>
                 </div>
             </div>
@@ -115,12 +110,10 @@
 </div>
 
 <script>
-    // System Constants
     const O = "_techrobyte";
     const S = "_techyy";
     const chime = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
 
-    // Panic Key: Hit ESC to instantly hide everything
     window.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
             if(document.getElementById('frame-wrap').style.display === 'block') {
@@ -139,7 +132,7 @@
     }
 
     function launch(encUrl) {
-        const url = atob(encUrl); // Decodes the Base64 URL
+        const url = atob(encUrl);
         const f = document.getElementById('p-frame');
         const w = document.getElementById('frame-wrap');
         f.src = url;
@@ -173,7 +166,7 @@
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app').style.display = 'block';
         if(isAdmin) { document.getElementById('n-admin').style.display = 'block'; load(); }
-        document.title = "Google Drive"; // Cloak the tab name
+        document.title = "Google Drive";
     }
 
     function tab(t) {
@@ -200,7 +193,6 @@
 
     function del(u) { localStorage.removeItem('sys_' + u); load(); }
 
-    // Visual Kernel (Binary)
     const can = document.getElementById('m');
     const ctx = can.getContext('2d');
     can.width = window.innerWidth; can.height = window.innerHeight;
