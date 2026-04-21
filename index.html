@@ -2,202 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MISSION HUB // OS_v5.0</title>
+    <title>CYBERWAVE // UNLOCKED</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --hacker-green: #00ff41; --main-orange: #ff8c00; --bg-dark: #000; }
+        :root { --accent: #7df9ff; --bg-dark: #050505; --panel: #0f0f0f; }
         * { box-sizing: border-box; cursor: crosshair; font-family: 'Lexend', sans-serif; font-weight: 700; }
         
         body, html { background: var(--bg-dark); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
 
-        /* FULL SCREEN MATRIX ANIMATION */
-        #canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+        /* MATRIX ANIMATION BACKGROUND */
+        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.25; }
 
-        header {
-            display: flex; background: rgba(10, 20, 29, 0.95); border-bottom: 2px solid #1a2a35;
-            height: 80px; align-items: center; padding: 0 20px;
+        /* TOP NAV */
+        nav { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 25px; background: #000; border-bottom: 1px solid #1a1a1a;
         }
-        .logo-box { border: 2px solid var(--main-orange); padding: 5px; margin-right: 15px; }
-        .title-text { color: var(--main-orange); letter-spacing: 2px; font-size: 20px; }
+        .logo { color: var(--accent); font-size: 18px; letter-spacing: 1px; }
+        .status { color: #fff; font-size: 14px; }
 
-        #main-container { display: none; height: calc(100vh - 80px); grid-template-columns: 320px 1fr; }
+        /* MAIN LAYOUT */
+        #app { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 50px); }
 
-        /* SIDEBAR STYLE */
-        .sidebar { background: rgba(7, 15, 21, 0.9); border-right: 1px solid #1a2a35; padding: 20px; display: flex; flex-direction: column; }
-        .stat-large { font-size: 80px; color: var(--main-orange); margin: 0; line-height: 1; }
-        .nav-item { 
-            display: flex; justify-content: space-between; padding: 18px; 
-            background: rgba(255,255,255,0.03); margin-bottom: 10px; border-left: 3px solid transparent;
-            transition: 0.2s;
-        }
-        .nav-item:hover, .nav-item.active { background: rgba(255,140,0,0.2); border-left: 3px solid var(--main-orange); color: var(--main-orange); }
+        /* SIDEBAR / LIVE CHAT AREA */
+        .sidebar { background: #080808; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 20px; }
+        .chat-box { flex: 1; background: #000; border-radius: 8px; margin-top: 15px; padding: 15px; display: flex; flex-direction: column; border: 1px solid #111; }
+        #chat-content { flex: 1; font-size: 14px; color: #888; overflow-y: auto; }
+        .chat-input { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 5px; margin: 10px 0; }
+        .send-btn { background: var(--accent); color: #000; border: none; padding: 10px; border-radius: 5px; width: 100%; }
 
         /* CONTENT AREA */
-        .content-area { padding: 40px; overflow-y: auto; background: rgba(0, 0, 0, 0.6); }
-        .page { display: none; }
-        .page.active { display: block; }
+        .main-view { padding: 40px; overflow-y: auto; }
+        .section-title { font-size: 24px; margin-bottom: 25px; color: #fff; }
 
-        .link-row { 
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(10, 20, 29, 0.9); border: 1px solid #1a2a35; padding: 12px 20px; margin-bottom: 8px;
-        }
-        .btn-action { background: #1a2a35; color: var(--hacker-green); border: 1px solid #2a3a45; padding: 8px 18px; margin-left: 10px; }
-        .btn-action:hover { background: var(--hacker-green); color: #000; }
+        /* PROXY GRID SYSTEM */
+        .mirror-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .mirror-card { background: var(--panel); border: 1px solid #1a1a1a; border-radius: 12px; padding: 30px 20px; text-align: center; transition: 0.3s; }
+        .mirror-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .mirror-name { font-size: 18px; margin-bottom: 20px; color: #fff; }
+        .launch-btn { background: var(--accent); color: #000; text-decoration: none; padding: 10px 25px; border-radius: 6px; font-size: 14px; display: inline-block; }
 
-        /* LOGIN SCREEN */
-        #login-screen { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { border: 2px solid var(--main-orange); padding: 40px; width: 380px; text-align: center; background: rgba(10,20,29,0.9); }
-        input { background: #000; border: 1px solid var(--main-orange); color: #fff; padding: 12px; width: 100%; margin: 10px 0; }
-
-        /* TERMINAL CHAT */
-        #chat-terminal {
-            position: fixed; bottom: 20px; right: 20px; width: 320px; height: 400px;
-            background: #000; border: 2px solid var(--hacker-green); display: none; flex-direction: column; z-index: 100;
-        }
-        #chat-logs { flex: 1; padding: 10px; overflow-y: auto; font-size: 13px; color: var(--hacker-green); font-family: monospace; }
+        /* ADMIN DRAWER */
+        #admin-panel { position: fixed; bottom: 0; right: 0; padding: 10px; }
+        .admin-trigger { background: transparent; border: none; color: #222; font-size: 10px; }
     </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<canvas id="matrix"></canvas>
 
-<div id="login-screen">
-    <div class="login-box">
-        <h1 style="color:var(--main-orange); margin-bottom:20px;">HUB_AUTH</h1>
-        <input type="text" id="u" placeholder="ID_IDENTIFIER">
-        <input type="password" id="p" placeholder="SEC_STRING">
-        <button onclick="auth()" class="btn-action" style="width:100%; color:#fff; border-color:var(--main-orange); margin-top:10px;">DECRYPT_ACCESS</button>
-        <button onclick="reg()" style="background:none; border:none; color:#444; margin-top:15px; font-size:10px;">CREATE_NEW_PROFILE</button>
-    </div>
-</div>
+<nav>
+    <div class="logo">CYBER<span style="color:#fff">WAVE</span></div>
+    <div class="status">Status: <span style="color:var(--accent)">Online</span></div>
+</nav>
 
-<header>
-    <div class="logo-box">⌬</div>
-    <div class="title-text">GAME ZONE // MISSION HUB</div>
-    <div style="margin-left:auto; color:var(--hacker-green); font-size:11px;">[ SYSTEM_STATUS: BREACHED ]</div>
-</header>
-
-<div id="main-container">
+<div id="app">
     <aside class="sidebar">
-        <div style="font-size:10px; color:#4a6fa5; letter-spacing:1px;">// ACTIVE_SECTORS</div>
-        <div class="stat-large">04</div>
-        <div style="font-size:10px; margin-bottom:30px; color:var(--main-orange);">DATABASE_ENTRIES_INDEXED</div>
-        
-        <div class="nav-item active" id="btn-home" onclick="tab('home')">SYSTEM_STATUS <span>01</span></div>
-        <div class="nav-item" id="btn-oc" onclick="tab('oc')">OVERCLOAKED <span>04</span></div>
-        <div class="nav-item">VELARA <span>[LOCKED]</span></div>
-        <div class="nav-item">AWP <span>[LOCKED]</span></div>
-        
-        <button onclick="toggleChat()" class="btn-action" style="margin-top:auto; border-color:var(--hacker-green);">[ CHAT_TERMINAL ]</button>
-        <div id="adm" style="display:none; margin-top:10px;">
-            <button onclick="tab('admin')" class="btn-action" style="width:100%; color:red; border-color:red;">[ ROOT_ACCESS ]</button>
+        <div class="section-title" style="font-size:18px; margin-bottom:10px;">Live Chat</div>
+        <div class="chat-box">
+            <div id="chat-content">
+                <span style="color:var(--accent)">You:</span> hi
+            </div>
+            <input type="text" class="chat-input" placeholder="Message..." id="chatMsg">
+            <button class="send-btn" onclick="sendMsg()">Send</button>
         </div>
+        
+        <button class="send-btn" onclick="showSector('oc')" style="margin-top: 20px; background: #1a1a1a; color: #fff; border: 1px solid #333;">OPEN OVERCLOAKED [104]</button>
     </aside>
 
-    <main class="content-area">
-        <div id="home-page" class="page active">
-            <h1 style="color:var(--main-orange); font-size:40px;">// SYSTEM_IDLE</h1>
-            <p>> Welcome back, <span id="user-tag" style="color:var(--hacker-green)"></span>.</p>
-            <p>> Scanning for updates... All clear.</p>
-            <p>> Use the sidebar to deploy missions.</p>
-        </div>
-
-        <div id="oc-page" class="page">
-            <h2 style="color:var(--main-orange)">// SECTOR: OVERCLOAKED</h2>
-            <div id="links-container"></div>
-        </div>
-
-        <div id="admin-page" class="page">
-            <h2 style="color:red;">// ADMIN_COMMAND_CENTER</h2>
-            <input type="text" id="bt" placeholder="Enter target ID...">
-            <button onclick="ban()" class="btn-action" style="color:red; border-color:red;">TERMINATE_ID</button>
+    <main class="main-view">
+        <div id="home-view">
+            <div class="section-title">Community Mirrors</div>
+            <div class="mirror-container" id="mirror-list">
+                </div>
         </div>
     </main>
 </div>
 
-<div id="chat-terminal">
-    <div style="background:var(--hacker-green); color:#000; padding:5px; font-size:11px;">ENCRYPTED_TUNNEL</div>
-    <div id="chat-logs">> Initializing secure P2P link...<br>> Connection stable.</div>
-    <input type="text" id="cm" placeholder="Type command..." style="border:none; border-top:1px solid var(--hacker-green);" onkeypress="if(event.key==='Enter') send()">
+<div id="admin-panel">
+    <button class="admin-trigger" onclick="showAdmin()">[SYS_ROOT]</button>
 </div>
 
 <script>
-    const OWNER = "_techrobyte", PASS = "techyy";
     const links = [
-        "https://overdih.netcrypto.org/", 
-        "https://mathedu.netcrypto.org/", 
-        "https://singingfiles.com/show.php?l=0&u=1637402&id=73209", 
-        "https://rariripsck.vngeek.com/"
-    ]; // Filtered for safety
+        "https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", 
+        "https://singingfiles.com/show.php?l=0&u=1637402&id=73209", "https://rariripsck.vngeek.com/"
+    ];
 
-    function auth() {
-        const u = document.getElementById('u').value, p = document.getElementById('p').value;
-        if(localStorage.getItem('ban_'+u)) { alert("ID_TERMINATED"); return; }
-        if((u===OWNER && p===PASS) || (u.includes('admin') && p.includes('cyberwave'))) {
-            enter(u, true);
-        } else if(localStorage.getItem('u_'+u) === p) {
-            enter(u, false);
-        } else { alert("ACCESS_DENIED"); }
-    }
-
-    function reg() {
-        const u = document.getElementById('u').value, p = document.getElementById('p').value;
-        if(u.length < 3) return;
-        localStorage.setItem('u_'+u, p);
-        alert("ID_CREATED. LOG IN.");
-    }
-
-    function enter(u, a) {
-        document.getElementById('login-screen').style.display='none';
-        document.getElementById('main-container').style.display='grid';
-        document.getElementById('user-tag').innerText = u;
-        if(a) document.getElementById('adm').style.display='block';
-        loadLinks();
-    }
-
-    function loadLinks() {
-        const cont = document.getElementById('links-container');
-        cont.innerHTML = "";
-        links.forEach((l, i) => {
-            cont.innerHTML += `<div class="link-row">
-                <span>MISSION_DATA_${(i+1).toString().padStart(2,'0')}</span>
-                <div>
-                    <button class="btn-action" onclick="window.open('${l}')">DEPLOY</button>
+    function loadMirrors() {
+        const list = document.getElementById('mirror-list');
+        list.innerHTML = "";
+        links.forEach((url, i) => {
+            const name = url.split('/')[2].split('.')[0].toUpperCase();
+            list.innerHTML += `
+                <div class="mirror-card">
+                    <div class="mirror-name">${name}</div>
+                    <a href="${url}" target="_blank" class="launch-btn">Launch</a>
                 </div>
-            </div>`;
+            `;
         });
     }
 
-    function tab(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id+'-page').classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(id === 'oc') document.getElementById('btn-oc').classList.add('active');
-        else document.getElementById('btn-home').classList.add('active');
+    function sendMsg() {
+        const input = document.getElementById('chatMsg');
+        if(!input.value) return;
+        const chat = document.getElementById('chat-content');
+        chat.innerHTML += `<br><span style="color:var(--accent)">You:</span> ${input.value}`;
+        input.value = "";
     }
 
-    function toggleChat() { 
-        const c = document.getElementById('chat-terminal');
-        c.style.display = (c.style.display==='flex') ? 'none' : 'flex';
+    function showAdmin() {
+        const p = prompt("ENTER ACCESS KEY:");
+        if(p === "techyy") {
+            const target = prompt("ID TO TERMINATE:");
+            if(target) alert("ID " + target + " HAS BEEN PURGED.");
+        }
     }
 
-    function send() {
-        const m = document.getElementById('cm');
-        document.getElementById('chat-logs').innerHTML += `<div>> USER: ${m.value}</div>`;
-        m.value = "";
-    }
-
-    function ban() {
-        localStorage.setItem('ban_'+document.getElementById('bt').value, true);
-        alert("ID_TERMINATED_SUCCESSFULLY");
-    }
-
-    // MATRIX RAIN
-    const canvas = document.getElementById('canvas');
+    // MATRIX ANIMATION
+    const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const chars = "01010101010101";
+    const alphabet = "01";
     const fontSize = 16;
     const columns = canvas.width / fontSize;
     const drops = Array(Math.floor(columns)).fill(1);
@@ -205,16 +132,17 @@
     function draw() {
         ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#00ff41";
+        ctx.fillStyle = "#7df9ff";
         ctx.font = fontSize + "px monospace";
         for (let i = 0; i < drops.length; i++) {
-            const text = chars.charAt(Math.floor(Math.random() * chars.length));
+            const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
             ctx.fillText(text, i * fontSize, drops[i] * fontSize);
             if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         }
     }
-    setInterval(draw, 33);
+    setInterval(draw, 30);
+    loadMirrors();
 </script>
 </body>
 </html>
