@@ -5,20 +5,17 @@
     <title>CYBERWAVE // MISSION_CONTROL</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
     <style>
-        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --sidebar: #05070f; --admin-gold: #f4d03f; --red: #ff3333; }
+        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --sidebar-bg: #05070f; --admin-gold: #f4d03f; --red: #ff3333; }
         * { box-sizing: border-box; font-family: 'Lexend', sans-serif; font-weight: 500; }
         
         body, html { background: var(--bg); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
         canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
 
-        @keyframes pop { 
-            0% { transform: scale(0.95); opacity: 0; } 
-            100% { transform: scale(1); opacity: 1; } 
-        }
+        @keyframes pop { 0% { transform: scale(0.98); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .pop { animation: pop 0.3s ease-out; }
 
         /* Login Screen */
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; z-index: 10; position: relative; }
         .login-box { width: 400px; padding: 40px; background: rgba(10, 14, 26, 0.98); border: 1px solid #1a2234; border-radius: 12px; }
         h1 { color: var(--green); margin: 0 0 20px 0; }
         label { display: block; color: var(--green); margin-bottom: 8px; font-size: 12px; }
@@ -26,33 +23,46 @@
         .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; cursor: pointer; border: 2px solid var(--green); background: transparent; color: var(--green); font-weight: bold; }
         .btn-login { border-color: var(--blue); color: var(--blue); }
 
-        /* Main App with Petezah Sidebar */
-        #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; }
+        /* --- FIXED SIDEBAR SYSTEM --- */
+        #app { display: none; height: 100vh; width: 100%; position: relative; }
         
         .side-panel { 
-            background: var(--sidebar); 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100%;
+            background: var(--sidebar-bg); 
             border-right: 1px solid #1a2234; 
-            padding: 30px 20px; 
+            padding: 40px 20px; 
             display: flex; 
             flex-direction: column; 
-            gap: 15px; 
+            z-index: 100;
         }
         
         .nav-item { 
-            padding: 12px 15px; 
-            border-radius: 8px; 
+            padding: 15px; 
+            border-radius: 10px; 
             cursor: pointer; 
-            color: #888; 
+            color: #666; 
             transition: 0.2s; 
+            margin-bottom: 10px;
+            font-size: 14px;
             border: 1px solid transparent;
         }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .nav-item.active { background: rgba(0, 255, 65, 0.1); color: var(--green); border-color: var(--green); }
 
-        .main-view { padding: 40px; overflow-y: auto; }
-        .card { background: #0d1117; border: 1px solid #30363d; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        .main-view { 
+            margin-left: 260px; /* Pushes content to the right of the sidebar */
+            padding: 60px; 
+            height: 100vh;
+            overflow-y: auto; 
+        }
+
+        .card { background: #0d1117; border: 1px solid #30363d; padding: 25px; border-radius: 12px; margin-bottom: 20px; transition: 0.3s; }
+        .card:hover { border-color: var(--green); }
         
-        /* User Table */
         .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
         .btn-small { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 4px; cursor: pointer; }
     </style>
@@ -75,28 +85,33 @@
 
 <div id="app">
     <div class="side-panel">
-        <h2 style="color:var(--green); margin-bottom: 20px;">CYBERWAVE</h2>
-        <div class="nav-item active" onclick="switchTab('mirrors', this)">🌐 MIRRORS</div>
-        <div id="admin-nav" class="nav-item" style="display:none;" onclick="switchTab('admin', this)">🔑 ROOT_ACCESS</div>
-        <div class="nav-item" style="margin-top: auto; color: var(--red);" onclick="location.reload()">LOGOUT</div>
+        <h2 style="color:var(--green); margin-bottom: 40px; letter-spacing: 2px;">CYBERWAVE</h2>
+        
+        <div class="nav-item active" id="nav-mirrors" onclick="switchTab('mirrors')">🌐 MIRRORS</div>
+        <div id="admin-nav" class="nav-item" style="display:none;" onclick="switchTab('admin')">🔑 ROOT_ACCESS</div>
+        
+        <div class="nav-item" style="margin-top: auto; color: var(--red); border-color: rgba(255,0,0,0.2);" onclick="location.reload()">LOGOUT</div>
     </div>
 
     <div class="main-view">
         <div id="view-mirrors" class="pop">
-            <h1>Active Proxies</h1>
+            <h1 style="margin-bottom: 30px;">Active Sectors</h1>
             <div class="card">
-                <h3>Nebula Mainframe</h3>
-                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH</button>
+                <h3>Nebula Mirror</h3>
+                <p style="color:#555">Connection: Encrypted</p>
+                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH TUNNEL</button>
             </div>
             <div class="card">
                 <h3>Vapor Sector</h3>
-                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://mathedu.netcrypto.org/')">LAUNCH</button>
+                <p style="color:#555">Connection: Direct</p>
+                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://mathedu.netcrypto.org/')">LAUNCH TUNNEL</button>
             </div>
         </div>
 
         <div id="view-admin" class="pop" style="display:none;">
-            <h1 style="color:var(--admin-gold)">User Database</h1>
-            <div id="user-list" class="card"></div>
+            <h1 style="color:var(--admin-gold); margin-bottom: 30px;">User Database</h1>
+            <div id="user-list" class="card">
+                </div>
         </div>
     </div>
 </div>
@@ -116,7 +131,7 @@
         const user = document.getElementById('u').value.trim();
         const pass = document.getElementById('p').value;
         if(!user || !pass) return;
-        if(user === OWNER) return alert("ID Reserved");
+        if(user === OWNER) return alert("System ID Reserved");
         localStorage.setItem('cyber_' + user, JSON.stringify({pw: pass, b: false}));
         playSfx(); alert("Registration Successful.");
     }
@@ -132,25 +147,29 @@
 
     function enter(isAdmin) {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app').style.display = 'grid';
+        document.getElementById('app').style.display = 'block';
         if(isAdmin) {
             document.getElementById('admin-nav').style.display = 'block';
             loadUsers();
         }
     }
 
-    function switchTab(tab, el) {
+    function switchTab(tab) {
         document.getElementById('view-mirrors').style.display = 'none';
         document.getElementById('view-admin').style.display = 'none';
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        
+        document.getElementById('nav-mirrors').classList.remove('active');
+        document.getElementById('admin-nav').classList.remove('active');
         
         document.getElementById('view-' + tab).style.display = 'block';
-        el.classList.add('active');
+        document.getElementById('nav-' + (tab === 'mirrors' ? 'mirrors' : 'admin')).classList.add('active');
+        
+        if(tab === 'admin') loadUsers();
     }
 
     function loadUsers() {
         const list = document.getElementById('user-list');
-        list.innerHTML = `<div class="user-row" style="color:var(--admin-gold)"><span>👑 ${OWNER}</span> <span>(ROOT)</span></div>`;
+        list.innerHTML = `<div class="user-row" style="color:var(--admin-gold); border-bottom: 2px solid var(--admin-gold); padding-bottom: 20px; margin-bottom: 10px;"><span>👑 ${OWNER}</span> <span>(SYSTEM ROOT)</span></div>`;
         for(let i=0; i<localStorage.length; i++) {
             const k = localStorage.key(i);
             if(k.startsWith('cyber_')) {
@@ -163,7 +182,7 @@
 
     function rem(u) { localStorage.removeItem('cyber_' + u); loadUsers(); }
 
-    // Matrix
+    // Matrix Background
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
