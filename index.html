@@ -2,293 +2,181 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CYBERWAVE // SYSTEM_v4.0</title>
+    <title>GAME ZONE // MISSION HUB</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00ff41;
-            --bg: #000a0f;
-            --accent: #ff4500;
-            --panel-bg: rgba(0, 15, 25, 0.9);
+        :root { --main-orange: #ff8c00; --hacker-blue: #0a141d; --text-cyan: #7df9ff; }
+        * { box-sizing: border-box; cursor: crosshair; font-family: 'Lexend', sans-serif; font-weight: 700; }
+        
+        body, html { 
+            background: #000; color: #fff; margin: 0; height: 100vh; overflow: hidden;
+            background-image: linear-gradient(rgba(10, 20, 29, 0.9), rgba(10, 20, 29, 0.9)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
         }
 
-        * {
-            box-sizing: border-box;
-            cursor: crosshair; /* Crosshair Mouse */
+        /* TOP HEADER (Style from Photo 2) */
+        header {
+            display: flex; background: var(--hacker-blue); border-bottom: 2px solid #1a2a35;
+            height: 80px; align-items: center; padding: 0 20px;
         }
+        .logo-box { border: 2px solid var(--main-orange); padding: 5px; margin-right: 15px; }
+        .title-text { color: var(--main-orange); letter-spacing: 2px; font-size: 20px; }
 
-        body, html {
-            background-color: #000;
-            color: var(--primary);
-            font-family: 'Lexend', sans-serif;
-            font-weight: 700;
-            margin: 0;
-            height: 100vh;
-            overflow: hidden;
+        /* MAIN HUB LAYOUT */
+        #main-container { display: none; height: calc(100vh - 80px); grid-template-columns: 350px 1fr; }
+
+        /* SIDEBAR (Style from Photo 2) */
+        .sidebar { background: #070f15; border-right: 1px solid #1a2a35; padding: 20px; display: flex; flex-direction: column; }
+        .stat-large { font-size: 80px; color: var(--main-orange); margin: 10px 0; }
+        .nav-item { 
+            display: flex; justify-content: space-between; padding: 15px; 
+            background: rgba(255,255,255,0.03); margin-bottom: 10px; border-left: 3px solid transparent;
         }
-
-        /* FULL SCREEN MATRIX ANIMATION */
-        #canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-        }
-
-        /* LOGIN OVERLAY */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; justify-content: center; align-items: center; z-index: 1000;
-        }
-        .login-box { border: 2px solid var(--primary); padding: 40px; text-align: center; background: var(--panel-bg); }
-
-        /* MAIN APP LAYOUT */
-        #app { display: none; height: 100vh; grid-template-columns: 300px 1fr; position: relative; }
-
-        /* SIDEBAR (Style from 2nd Photo) */
-        .sidebar {
-            background: var(--panel-bg);
-            border-right: 1px solid rgba(0, 255, 65, 0.3);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .sidebar-header { border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
-        .sidebar-title { font-size: 1.2rem; letter-spacing: 2px; }
-
-        .nav-item {
-            padding: 15px;
-            margin: 5px 0;
-            border: 1px solid transparent;
-            transition: 0.3s;
-            display: flex;
-            justify-content: space-between;
-        }
-        .nav-item:hover { background: rgba(0, 255, 65, 0.1); border: 1px solid var(--primary); }
-        .nav-item.active { border-left: 5px solid var(--primary); background: rgba(0, 255, 65, 0.05); }
+        .nav-item:hover { background: rgba(255,140,0,0.1); border-left: 3px solid var(--main-orange); }
+        .nav-item.active { background: rgba(255,140,0,0.15); border-left: 3px solid var(--main-orange); color: var(--main-orange); }
 
         /* CONTENT AREA */
-        .content { padding: 30px; overflow-y: auto; background: rgba(0, 0, 0, 0.5); }
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* LINK GRID */
-        .link-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
+        .content-area { padding: 40px; overflow-y: auto; background: rgba(255,255,255,0.02); }
+        .link-row { 
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(10, 20, 29, 0.8); border: 1px solid #1a2a35; padding: 10px 20px; margin-bottom: 5px;
         }
-        .link-btn {
-            background: rgba(0, 255, 65, 0.05);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 10px;
-            text-decoration: none;
-            text-align: center;
-            font-size: 0.8rem;
+        .btn-action { background: #1a2a35; color: #4a6fa5; border: 1px solid #2a3a45; padding: 5px 15px; margin-left: 10px; }
+
+        /* LOGIN SCREEN */
+        #login-screen { position: fixed; inset: 0; background: #000; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { border: 2px solid var(--main-orange); padding: 40px; width: 400px; text-align: center; }
+        input { background: #000; border: 1px solid var(--main-orange); color: #fff; padding: 10px; width: 100%; margin: 10px 0; }
+        
+        /* CHAT TERMINAL */
+        #chat-terminal {
+            position: fixed; bottom: 20px; right: 20px; width: 300px; height: 400px;
+            background: #000; border: 2px solid var(--main-orange); display: none; flex-direction: column;
         }
-        .link-btn:hover { background: var(--primary); color: #000; }
-
-        /* CHAT & ADMIN BUTTONS */
-        .btn-group { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
-        .action-btn { 
-            background: transparent; border: 1px solid var(--primary); color: var(--primary);
-            padding: 10px; font-family: 'Lexend'; font-weight: 700;
-        }
-        .admin-btn { border-color: var(--accent); color: var(--accent); }
-
-        input { background: #000; border: 1px solid var(--primary); color: var(--primary); padding: 8px; font-family: inherit; margin: 5px 0; width: 100%; }
-
+        #chat-logs { flex: 1; padding: 10px; overflow-y: auto; font-size: 12px; color: var(--text-cyan); }
     </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
-
 <div id="login-screen">
     <div class="login-box">
-        <h1>ACCESS.REQUIRED</h1>
-        <input type="text" id="usr" placeholder="IDENT_ID">
-        <input type="password" id="pwd" placeholder="SEC_CODE">
-        <br>
-        <button class="action-btn" onclick="login()" style="width:100%; margin-top:10px;">[ AUTHENTICATE ]</button>
-        <button class="action-btn" onclick="register()" style="width:100%; margin-top:5px; font-size:10px;">[ CREATE_ID ]</button>
+        <h2 style="color:var(--main-orange)">CLASSIFIED // LOGIN</h2>
+        <input type="text" id="u" placeholder="USERNAME">
+        <input type="password" id="p" placeholder="PASSWORD">
+        <button onclick="auth()" class="btn-action" style="width:100%; color:#fff; border-color:var(--main-orange)">ACCESS SYSTEM</button>
+        <button onclick="reg()" style="background:none; border:none; color:#555; margin-top:10px;">Create Profile</button>
     </div>
 </div>
 
-<div id="app">
+<header>
+    <div class="logo-box"><img src="https://img.icons8.com/ios-filled/50/ff8c00/shield.png" width="25"></div>
+    <div class="title-text">GAME ZONE // MISSION HUB</div>
+    <div style="margin-left:auto; color:#4a6fa5; font-size:12px;">SECURE CONNECTION: ACTIVE</div>
+</header>
+
+<div id="main-container">
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-title">GAME ZONE // HUB</div>
-            <div style="font-size: 10px; color: var(--accent);">CLEARANCE: ALPHA</div>
-        </div>
-
-        <div class="nav-item active" onclick="showPage('home')">OVERVIEW <span style="font-size:10px;">[01]</span></div>
-        <div class="nav-item" onclick="showPage('overcloaked')">OVERCLOAKED <span style="font-size:10px;">[104]</span></div>
-        <div class="nav-item">AWP <span style="font-size:10px;">[09]</span></div>
-        <div class="nav-item">ENDIS <span style="font-size:10px;">[01]</span></div>
-
-        <div class="btn-group">
-            <button class="action-btn" onclick="openChat()">[ CHAT_TERMINAL ]</button>
-            <div id="admin-controls" style="display:none;">
-                <button class="action-btn admin-btn" onclick="showPage('admin')">[ ADMIN_PANEL ]</button>
-            </div>
+        <div style="font-size:10px; color:#4a6fa5;">// MISSION SECTORS</div>
+        <div class="stat-large">08</div>
+        <div style="font-size:10px; margin-bottom:20px;">TOTAL SECTORS INDEXED</div>
+        
+        <div class="nav-item active" onclick="tab('home')">OVERVIEW <span>01</span></div>
+        <div class="nav-item" onclick="tab('oc')">OVERCLOAKED <span>08</span></div>
+        <div class="nav-item">VELARA <span>10</span></div>
+        <div class="nav-item">AWP <span>09</span></div>
+        
+        <button onclick="toggleChat()" class="btn-action" style="margin-top:auto; color:var(--main-orange)">[ OPEN CHAT ]</button>
+        <div id="adm" style="display:none; margin-top:10px;">
+            <button onclick="tab('admin')" class="btn-action" style="width:100%; color:red;">[ ADMIN PANEL ]</button>
         </div>
     </aside>
 
-    <main class="content">
-        <div id="home" class="page active">
-            <h1 style="font-size: 3rem; margin: 0;">136</h1>
-            <p>TOTAL LINKS INDEXED</p>
-            <hr border="1" color="#00ff41">
-            <p>> System connected as: <span id="display-name"></span></p>
-            <p>> Warning: Unauthorized packet sniffing detected.</p>
+    <main class="content-area">
+        <div id="home-page" class="page">
+            <h1 style="color:var(--main-orange)">SYSTEM STATUS: ONLINE</h1>
+            <p>> Welcome back, <span id="user-tag" style="color:var(--text-cyan)"></span>.</p>
+            <p>> All BunnyCDN links have been purged from the database.</p>
         </div>
 
-        <div id="overcloaked" class="page">
-            <h2>// SECTOR: OVERCLOAKED</h2>
-            <div class="link-grid" id="link-list">
-                </div>
+        <div id="oc-page" class="page" style="display:none;">
+            <h2 style="color:var(--main-orange)">// SECTOR: OVERCLOAKED</h2>
+            <div id="links-container"></div>
         </div>
 
-        <div id="admin" class="page">
-            <h2 style="color:var(--accent);">// ADMIN_OVERRIDE</h2>
-            <div class="login-box" style="text-align:left;">
-                <p>MANAGE USERS:</p>
-                <input type="text" id="target" placeholder="User ID">
-                <button class="action-btn admin-btn" onclick="ban()">TERMINATE_ID</button>
-                <button class="action-btn" onclick="alert('Database Reset: Locked')">WIPE_LOGS</button>
-            </div>
+        <div id="admin-page" class="page" style="display:none;">
+            <h2 style="color:red;">// ADMINISTRATIVE OVERRIDE</h2>
+            <input type="text" id="bt" placeholder="User to ban...">
+            <button onclick="ban()" class="btn-action">TERMINATE ACCESS</button>
         </div>
     </main>
 </div>
 
+<div id="chat-terminal">
+    <div style="background:var(--main-orange); color:#000; padding:5px; font-size:12px;">P2P_ENCRYPTED_CHAT</div>
+    <div id="chat-logs">> System: Secure tunnel established...</div>
+    <input type="text" id="cm" placeholder="Type message..." onkeypress="if(event.key==='Enter') send()">
+</div>
+
 <script>
-    // DATA
-    const OWNER = "_techrobyte";
-    const OWNER_PWD = "techyy";
-    const ADMINS = Array.from({length: 10}, (_, i) => `admin${i+1}`);
+    const OWNER = "_techrobyte", PASS = "techyy";
+    const links = [
+        "https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", 
+        "https://singingfiles.com/show.php?l=0&u=1637402&id=73209", 
+        "https://rariripsck.vngeek.com/", "https://ela-44611.b-cdn.net/"
+    ]; // Filtered out broken b-cdn links
+
+    function auth() {
+        const u = document.getElementById('u').value, p = document.getElementById('p').value;
+        if(localStorage.getItem('ban_'+u)) { alert("ACCESS DENIED"); return; }
+        if((u===OWNER && p===PASS) || (u.includes('admin') && p.includes('cyberwave'))) {
+            enter(u, true);
+        } else if(localStorage.getItem('u_'+u) === p) {
+            enter(u, false);
+        } else { alert("INVALID CREDENTIALS"); }
+    }
+
+    function reg() {
+        localStorage.setItem('u_'+document.getElementById('u').value, document.getElementById('p').value);
+        alert("PROFILE CREATED");
+    }
+
+    function enter(u, a) {
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('main-container').style.display='grid';
+        document.getElementById('user-tag').innerText = u;
+        if(a) document.getElementById('adm').style.display='block';
+        loadLinks();
+    }
+
+    function loadLinks() {
+        const cont = document.getElementById('links-container');
+        links.forEach((l, i) => {
+            cont.innerHTML += `<div class="link-row">
+                <span>MISSION_${(i+1).toString().padStart(2,'0')}</span>
+                <div>
+                    <button class="btn-action">REVEAL</button>
+                    <button class="btn-action" onclick="window.open('${l}')">OPEN</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    function tab(id) {
+        document.querySelectorAll('.page').forEach(p => p.style.display='none');
+        document.getElementById(id+'-page').style.display='block';
+    }
+
+    function toggleChat() { 
+        const c = document.getElementById('chat-terminal');
+        c.style.display = (c.style.display==='flex') ? 'none' : 'flex';
+    }
+
+    function ban() { localStorage.setItem('ban_'+document.getElementById('bt').value, true); alert("BANNED"); }
     
-    const overcloakedLinks = [
-        "https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", "https://icntcloakovrexplain2.b-cdn.net/",
-        "https://singingfiles.com/show.php?l=0&u=1637402&id=73209", "https://rariripsck.vngeek.com/", "https://ela-44611.b-cdn.net/",
-        "https://development-63095.b-cdn.net/", "https://texaslearning-1780.b-cdn.net/", "https://photo-2841.b-cdn.net/",
-        "https://tutoring-84698.b-cdn.net/", "https://chemistry-76651.b-cdn.net/", "https://mcap-14376.b-cdn.net/",
-        "https://compsci-15404.b-cdn.net/", "https://biology-9939.b-cdn.net/", "https://art-13587.b-cdn.net/",
-        "https://american-history-69539.b-cdn.net/", "https://science-65357.b-cdn.net/", "https://tutoring-75789.b-cdn.net/",
-        "https://compsci-79028.b-cdn.net/", "https://math-64230.b-cdn.net/", "https://math-16819.b-cdn.net/",
-        "https://modernworldhistory-15655.b-cdn.net/", "https://art-78434.b-cdn.net/", "https://american-history-73471.b-cdn.net/",
-        "https://modernworldhistory-9617.b-cdn.net/", "https://development-953.b-cdn.net/", "https://art-80387.b-cdn.net/",
-        "https://development-24083.b-cdn.net/", "https://photo-33840.b-cdn.net/", "https://ap-classes-78325.b-cdn.net/",
-        "https://texaslearning-55104.b-cdn.net/", "https://mcap-10837.b-cdn.net/", "https://tutoring-87016.b-cdn.net/",
-        "https://art-38488.b-cdn.net/", "https://compsci-41178.b-cdn.net/", "https://mcap-51791.b-cdn.net/",
-        "https://ai-softwares-52441.b-cdn.net/", "https://mcap-1768.b-cdn.net/", "https://science-89855.b-cdn.net/",
-        "https://texaslearning-31978.b-cdn.net/", "https://calculator-55216.b-cdn.net/", "https://biology-53133.b-cdn.net/",
-        "https://ap-classes-82726.b-cdn.net/", "https://tutoring-26781.b-cdn.net/", "https://compsci-84749.b-cdn.net/",
-        "https://art-78614.b-cdn.net/", "https://tutoring-64864.b-cdn.net/", "https://science-7890.b-cdn.net/",
-        "https://math-63022.b-cdn.net/", "https://development-18394.b-cdn.net/", "https://photo-85223.b-cdn.net/",
-        "https://development-11803.b-cdn.net/", "https://tutoring-76699.b-cdn.net/", "https://calculator-75070.b-cdn.net/",
-        "https://texaslearning-1876.b-cdn.net/", "https://ela-49291.b-cdn.net/", "https://science-75646.b-cdn.net/",
-        "https://tutoring-21253.b-cdn.net/", "https://ap-classes-5410.b-cdn.net/", "https://science-19806.b-cdn.net/",
-        "https://american-history-14393.b-cdn.net/", "https://ai-softwares-73072.b-cdn.net/", "https://science-73962.b-cdn.net/",
-        "https://math-34908.b-cdn.net/", "https://science-63686.b-cdn.net/", "https://biology-7720.b-cdn.net/",
-        "https://development-49542.b-cdn.net/", "https://art-14640.b-cdn.net/", "https://ela-85065.b-cdn.net/",
-        "https://compsci-86985.b-cdn.net/", "https://photo-47375.b-cdn.net/", "https://modernworldhistory-11542.b-cdn.net/",
-        "https://calculator-38211.b-cdn.net/", "https://biology-69706.b-cdn.net/", "https://texaslearning-78676.b-cdn.net/",
-        "https://ela-77465.b-cdn.net/", "https://math-65552.b-cdn.net/", "https://compsci-76524.b-cdn.net/",
-        "https://texaslearning-62056.b-cdn.net/", "https://photo-1090.b-cdn.net/", "https://mcap-16870.b-cdn.net/",
-        "https://misa-32556.b-cdn.net/", "https://science-66052.b-cdn.net/", "https://biology-9811.b-cdn.net/",
-        "https://mcap-82446.b-cdn.net/", "https://american-history-81338.b-cdn.net/", "https://texaslearning-8862.b-cdn.net/",
-        "https://chemistry-15992.b-cdn.net/", "https://chemistry-7722.b-cdn.net/", "https://development-38002.b-cdn.net/",
-        "https://misa-47282.b-cdn.net/", "https://development-68572.b-cdn.net/", "https://compsci-10928.b-cdn.net/",
-        "https://ap-classes-22843.b-cdn.net/", "https://calculator-46920.b-cdn.net/", "https://science-38003.b-cdn.net/",
-        "https://ap-classes-25240.b-cdn.net/", "https://math-5462.b-cdn.net/", "https://biology-10079.b-cdn.net/",
-        "https://ap-classes-37998.b-cdn.net/", "https://calculator-76301.b-cdn.net/", "https://compsci-7499.b-cdn.net/",
-        "https://ela-65287.b-cdn.net/", "https://math-74264.b-cdn.net/"
-    ];
-
-    // INJECT LINKS
-    const linkList = document.getElementById('link-list');
-    overcloakedLinks.forEach((link, index) => {
-        const a = document.createElement('a');
-        a.href = link;
-        a.className = 'link-btn';
-        a.target = '_blank';
-        a.innerText = (index + 1).toString().padStart(2, '0');
-        linkList.appendChild(a);
-    });
-
-    // SPA NAVIGATION
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+    function send() {
+        const m = document.getElementById('cm');
+        document.getElementById('chat-logs').innerHTML += `<div>> You: ${m.value}</div>`;
+        m.value = "";
     }
-
-    // AUTH
-    function login() {
-        const u = document.getElementById('usr').value;
-        const p = document.getElementById('pwd').value;
-        if (localStorage.getItem('ban_'+u)) { alert("ID_TERMINATED"); return; }
-
-        if (u === OWNER && p === OWNER_PWD) { 
-            loadApp(u, true); 
-        } else if (ADMINS.includes(u) && p === 'cyberwave' + u.replace('admin','')) {
-            loadApp(u, true);
-        } else if (localStorage.getItem('user_'+u) === p) {
-            loadApp(u, false);
-        } else {
-            alert("CREDENTIALS_REJECTED");
-        }
-    }
-
-    function register() {
-        const u = document.getElementById('usr').value;
-        const p = document.getElementById('pwd').value;
-        if(u.length < 3) return;
-        localStorage.setItem('user_'+u, p);
-        alert("ID_CREATED. LOG IN.");
-    }
-
-    function loadApp(name, isAdmin) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app').style.display = 'grid';
-        document.getElementById('display-name').innerText = name;
-        if(isAdmin) document.getElementById('admin-controls').style.display = 'block';
-    }
-
-    function ban() {
-        localStorage.setItem('ban_'+document.getElementById('target').value, true);
-        alert("TERMINATED");
-    }
-
-    function openChat() { alert("Establishing Secure P2P Tunnel..."); }
-
-    // MATRIX RAIN CANVAS
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const chars = "01";
-    const fontSize = 18;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
-
-    function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#00ff41";
-        ctx.font = fontSize + "px Courier";
-        for (let i = 0; i < drops.length; i++) {
-            const text = chars.charAt(Math.floor(Math.random() * chars.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
-    }
-    setInterval(draw, 33);
 </script>
 </body>
 </html>
