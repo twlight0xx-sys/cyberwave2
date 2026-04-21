@@ -5,45 +5,56 @@
     <title>CYBERWAVE // MISSION_CONTROL</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
     <style>
-        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --admin-gold: #f4d03f; --red: #ff3333; }
+        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --sidebar: #05070f; --admin-gold: #f4d03f; --red: #ff3333; }
         * { box-sizing: border-box; font-family: 'Lexend', sans-serif; font-weight: 500; }
         
         body, html { background: var(--bg); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
         canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
 
-        /* Pop Animation */
         @keyframes pop { 
-            0% { transform: scale(0.9); opacity: 0; } 
-            70% { transform: scale(1.05); }
+            0% { transform: scale(0.95); opacity: 0; } 
             100% { transform: scale(1); opacity: 1; } 
         }
-        .pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .pop { animation: pop 0.3s ease-out; }
 
-        /* Login Styling */
+        /* Login Screen */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .login-box { width: 420px; padding: 40px; background: rgba(10, 14, 26, 0.98); border: 1px solid #1a2234; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        h1 { color: var(--green); font-size: 38px; margin: 0 0 10px 0; }
-        label { display: block; color: var(--green); margin: 15px 0 8px 0; font-size: 13px; }
-        input { width: 100%; padding: 14px; background: #05070f; border: 1px solid #1a2234; color: #fff; border-radius: 8px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
-        
-        .btn { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; border: 2px solid var(--green); background: transparent; color: var(--green); }
+        .login-box { width: 400px; padding: 40px; background: rgba(10, 14, 26, 0.98); border: 1px solid #1a2234; border-radius: 12px; }
+        h1 { color: var(--green); margin: 0 0 20px 0; }
+        label { display: block; color: var(--green); margin-bottom: 8px; font-size: 12px; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #1a2234; color: #fff; border-radius: 6px; margin-bottom: 20px; outline: none; }
+        .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; cursor: pointer; border: 2px solid var(--green); background: transparent; color: var(--green); font-weight: bold; }
         .btn-login { border-color: var(--blue); color: var(--blue); }
-        .btn:active { transform: scale(0.96); }
 
-        /* Main Hub */
-        #hub { display: none; padding: 40px; height: 100vh; overflow-y: auto; }
-        .card { background: #0d1117; border: 1px solid #30363d; padding: 25px; border-radius: 12px; margin-top: 20px; transition: 0.3s; }
-        .card:hover { border-color: var(--green); }
+        /* Main App with Petezah Sidebar */
+        #app { display: none; height: 100vh; grid-template-columns: 260px 1fr; }
         
-        /* Admin View */
-        .admin-section { border-top: 2px solid var(--admin-gold); margin-top: 50px; padding-top: 20px; }
-        .user-row { padding: 15px; border-bottom: 1px solid #1a2234; display: flex; justify-content: space-between; align-items: center; }
-        .btn-ban { border: 1px solid var(--red); color: var(--red); padding: 5px 10px; background: none; border-radius: 4px; cursor: pointer; }
+        .side-panel { 
+            background: var(--sidebar); 
+            border-right: 1px solid #1a2234; 
+            padding: 30px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        
+        .nav-item { 
+            padding: 12px 15px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            color: #888; 
+            transition: 0.2s; 
+            border: 1px solid transparent;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-item.active { background: rgba(0, 255, 65, 0.1); color: var(--green); border-color: var(--green); }
 
-        /* Floating UI */
-        #floats { position: fixed; bottom: 20px; right: 20px; display: flex; align-items: center; gap: 15px; }
-        .status { border: 2px solid var(--green); color: var(--green); padding: 5px 12px; border-radius: 20px; font-size: 12px; box-shadow: 0 0 8px var(--green); }
+        .main-view { padding: 40px; overflow-y: auto; }
+        .card { background: #0d1117; border: 1px solid #30363d; padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        
+        /* User Table */
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
+        .btn-small { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -53,38 +64,41 @@
 <div id="login-screen">
     <div class="login-box pop">
         <h1>$ Cyberwave</h1>
-        <p style="color:#555; font-size:11px; margin-bottom: 20px;">VERSION 2.2 // BRAVE_OPTIMIZED</p>
-        
         <label>> IDENTITY</label>
-        <input type="text" id="u" placeholder="Enter Username..." autocomplete="off">
-        
+        <input type="text" id="u" placeholder="Username" autocomplete="off">
         <label>> SEC_STRING</label>
-        <input type="password" id="p" placeholder="Enter Password..." autocomplete="off">
-        
+        <input type="password" id="p" placeholder="Password" autocomplete="off">
         <button class="btn" onclick="register()">[CREATE_ACCOUNT]</button>
         <button class="btn btn-login" onclick="login()">[EXECUTE_LOGIN]</button>
     </div>
 </div>
 
-<div id="hub" class="pop">
-    <h1 id="welc" style="color:var(--green)">HUB_CONNECTED</h1>
-    <div class="card">
-        <h3>Nebula Mainframe</h3>
-        <p style="color:#888">Secure Tunnel: ACTIVE</p>
-        <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH</button>
+<div id="app">
+    <div class="side-panel">
+        <h2 style="color:var(--green); margin-bottom: 20px;">CYBERWAVE</h2>
+        <div class="nav-item active" onclick="switchTab('mirrors', this)">🌐 MIRRORS</div>
+        <div id="admin-nav" class="nav-item" style="display:none;" onclick="switchTab('admin', this)">🔑 ROOT_ACCESS</div>
+        <div class="nav-item" style="margin-top: auto; color: var(--red);" onclick="location.reload()">LOGOUT</div>
     </div>
 
-    <div id="admin" class="admin-section" style="display:none;">
-        <h2 style="color:var(--admin-gold)">Root Access Panel</h2>
-        <div id="user-list"></div>
-    </div>
-    
-    <button onclick="location.reload()" style="margin-top:30px; background:none; border:1px solid var(--red); color:var(--red); padding: 10px 20px; border-radius: 6px; cursor:pointer;">TERMINATE_SESSION</button>
-</div>
+    <div class="main-view">
+        <div id="view-mirrors" class="pop">
+            <h1>Active Proxies</h1>
+            <div class="card">
+                <h3>Nebula Mainframe</h3>
+                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH</button>
+            </div>
+            <div class="card">
+                <h3>Vapor Sector</h3>
+                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://mathedu.netcrypto.org/')">LAUNCH</button>
+            </div>
+        </div>
 
-<div id="floats">
-    <div id="stat" class="status" style="display:none;">[ONLINE]</div>
-    <div style="font-size:24px; cursor:pointer;" onclick="alert('Chat Offline')">💬</div>
+        <div id="view-admin" class="pop" style="display:none;">
+            <h1 style="color:var(--admin-gold)">User Database</h1>
+            <div id="user-list" class="card"></div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -94,7 +108,7 @@
 
     function playSfx() {
         chime.currentTime = 0;
-        chime.play().catch(() => {}); // Catch Brave's auto-play block
+        chime.play().catch(() => {});
         if(navigator.vibrate) navigator.vibrate(100);
     }
 
@@ -102,81 +116,63 @@
         const user = document.getElementById('u').value.trim();
         const pass = document.getElementById('p').value;
         if(!user || !pass) return;
-        if(user === OWNER) return alert("System ID Reserved");
-        
+        if(user === OWNER) return alert("ID Reserved");
         localStorage.setItem('cyber_' + user, JSON.stringify({pw: pass, b: false}));
-        playSfx();
-        alert("Local Registration Successful.");
+        playSfx(); alert("Registration Successful.");
     }
 
     function login() {
         const user = document.getElementById('u').value.trim();
         const pass = document.getElementById('p').value;
-        
-        if(user === OWNER && pass === PASS) {
-            playSfx();
-            return enter(true);
-        }
-        
+        if(user === OWNER && pass === PASS) { playSfx(); return enter(true); }
         const data = JSON.parse(localStorage.getItem('cyber_' + user));
-        if(data && data.pw === pass) {
-            if(data.b) return alert("ID TERMINATED");
-            playSfx();
-            return enter(false);
-        }
+        if(data && data.pw === pass) { playSfx(); return enter(false); }
         alert("ACCESS DENIED");
     }
 
     function enter(isAdmin) {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('hub').style.display = 'block';
-        document.getElementById('stat').style.display = 'block';
-        document.getElementById('welc').innerText = "WELCOME, " + document.getElementById('u').value;
-        
+        document.getElementById('app').style.display = 'grid';
         if(isAdmin) {
-            document.getElementById('admin').style.display = 'block';
+            document.getElementById('admin-nav').style.display = 'block';
             loadUsers();
         }
+    }
+
+    function switchTab(tab, el) {
+        document.getElementById('view-mirrors').style.display = 'none';
+        document.getElementById('view-admin').style.display = 'none';
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        
+        document.getElementById('view-' + tab).style.display = 'block';
+        el.classList.add('active');
     }
 
     function loadUsers() {
         const list = document.getElementById('user-list');
         list.innerHTML = `<div class="user-row" style="color:var(--admin-gold)"><span>👑 ${OWNER}</span> <span>(ROOT)</span></div>`;
-        
         for(let i=0; i<localStorage.length; i++) {
             const k = localStorage.key(i);
             if(k.startsWith('cyber_')) {
                 const u = k.replace('cyber_', '');
                 const d = JSON.parse(localStorage.getItem(k));
-                list.innerHTML += `
-                    <div class="user-row">
-                        <span>$ ${u} | PW: ${d.pw}</span>
-                        <button class="btn-ban" onclick="rem('${u}')">DELETE</button>
-                    </div>`;
+                list.innerHTML += `<div class="user-row"><span>$ ${u} | PW: ${d.pw}</span><button class="btn-small" onclick="rem('${u}')">DELETE</button></div>`;
             }
         }
     }
 
-    function rem(u) {
-        localStorage.removeItem('cyber_' + u);
-        loadUsers();
-    }
+    function rem(u) { localStorage.removeItem('cyber_' + u); loadUsers(); }
 
-    // Binary Rain
+    // Matrix
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const columns = Math.floor(canvas.width/16);
-    const drops = Array(columns).fill(1);
-
+    const drops = Array(Math.floor(canvas.width/16)).fill(1);
     function draw() {
-        ctx.fillStyle = "rgba(10, 14, 26, 0.1)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0";
-        ctx.font = "16px monospace";
+        ctx.fillStyle = "rgba(10, 14, 26, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0"; ctx.font = "16px monospace";
         drops.forEach((y, i) => {
-            const char = Math.floor(Math.random()*2);
-            ctx.fillText(char, i*16, y*16);
+            ctx.fillText(Math.floor(Math.random()*2), i*16, y*16);
             if(y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         });
