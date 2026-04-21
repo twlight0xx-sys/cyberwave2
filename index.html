@@ -2,307 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CYBERWAVE // SECTOR.ACCESS</title>
+    <title>CYBERWAVE // MISSION_CONTROL</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
     <style>
-        /* BASE HACKER AESTHETIC */
-        :root { --hacker-green: #00ff41; --bg-dark: #000; }
+        :root { --hacker-green: #00ff41; --bg-dark: #0a0e1a; --btn-blue: #58a6ff; --admin-gold: #f4d03f; --ban-red: #ff3333; }
+        * { box-sizing: border-box; font-family: 'Lexend', sans-serif; font-weight: 500; }
         
-        body, html {
-            background-color: var(--bg-dark);
-            color: var(--hacker-green);
-            font-family: 'Lexend', sans-serif;
-            font-weight: 500;
-            margin: 0;
-            height: 100vh;
-            overflow: hidden; /* Prevent normal scrolling */
-            text-shadow: 0 0 5px var(--hacker-green);
-        }
-        
-        /* The Matrix Falling Binary Background */
-        #matrix-bg {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: -1;
-            font-family: monospace;
-            font-size: 1.2rem;
-            color: rgba(0, 255, 65, 0.4); /* Faded green binary */
-            animation: matrixDrop 20s infinite linear;
-        }
+        body, html { background: var(--bg-dark); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
 
-        /* 1. THE LOGIN SCREEN (ALWAYS VISIBLE FIRST) */
-        #login-wrapper {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            text-align: center;
-        }
+        /* MATRIX BACKGROUND */
+        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; }
 
-        #login-wrapper.hidden { display: none; }
+        /* 1. LOGIN SCREEN */
+        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+        .login-container { width: 450px; padding: 40px; background: rgba(10, 14, 26, 0.95); border-radius: 8px; border: 1px solid #1a2234; }
+        .login-title { color: var(--hacker-green); font-size: 42px; margin-bottom: 10px; }
+        .login-subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
+        label { display: block; color: var(--hacker-green); margin-bottom: 10px; }
+        input { width: 100%; background: #05070f; border: 1px solid #1a2234; color: #fff; padding: 15px; border-radius: 5px; margin-bottom: 25px; outline: none; }
+        .login-btn { width: 100%; padding: 15px; border-radius: 5px; margin-bottom: 15px; cursor: pointer; background: transparent; border: 2px solid var(--hacker-green); color: var(--hacker-green); }
+        .login-btn.blue { border-color: var(--btn-blue); color: var(--btn-blue); }
 
-        input { background: #000; border: 1px solid var(--hacker-green); color: var(--hacker-green); padding: 12px; margin: 10px; font-family: inherit;}
-        button { background: transparent; border: 2px solid var(--hacker-green); color: var(--hacker-green); padding: 10px 20px; font-weight: bold; cursor: pointer; transition: 0.3s;}
-        button:hover { background: var(--hacker-green); color: #000; }
+        /* 2. MAIN HUB */
+        #main-app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
+        .sidebar { background: #05070f; border-right: 1px solid #1a2234; padding: 20px; }
+        .main-content { padding: 40px; overflow-y: auto; }
+        .proxy-card { background: #0d1117; border: 1px solid #30363d; border-radius: 10px; padding: 25px; text-align: center; margin-bottom: 20px; }
+        .launch-btn { background: #3fb950; color: #fff; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; width: 100%; margin-top: 10px; }
 
-        /* 2. THE MAIN HUB LAYOUT (HIDDEN UNTIL LOGIN) */
-        #app-wrapper {
-            display: none;
-            flex-direction: row;
-            width: 100%; height: 100%;
-        }
-        
-        #app-wrapper.active { display: flex; }
+        /* 3. ADMIN PANEL STYLE */
+        .admin-block { background: #1c1c2b; border-radius: 5px; padding: 20px; margin-top: 20px; border-bottom: 2px solid var(--hacker-green); }
+        .user-card { border-bottom: 1px solid #30363d; padding: 15px 0; }
+        .role-btn { background: none; border: 2px solid var(--admin-gold); color: var(--admin-gold); padding: 5px 10px; margin: 10px 0; border-radius: 4px; }
+        .btn-danger { background: none; border: 1px solid var(--ban-red); color: var(--ban-red); padding: 5px 10px; cursor: pointer; margin-right: 5px; }
 
-        /* Left Side (Navigation) */
-        .sidebar {
-            width: 250px;
-            border-right: 2px solid var(--hacker-green);
-            padding: 20px;
-            background: rgba(0, 15, 0, 0.8);
-            display: flex; flex-direction: column;
-        }
+        /* 4. OVERCLOAKED PAGE */
+        #links-page { display: none; padding: 40px; height: 100vh; overflow-y: auto; }
+        .link-row { display: flex; justify-content: space-between; align-items: center; background: #0d1117; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #30363d; }
 
-        .nav-item { cursor: pointer; padding: 10px; transition: 0.2s;}
-        .nav-item:hover, .nav-item.active { background: rgba(0, 255, 0, 0.3); border-left: 5px solid var(--hacker-green);}
-
-        /* Collapsible Proxy Group */
-        .collapsible { cursor: pointer; background: #000; border: 1px solid var(--hacker-green); padding: 10px; text-align: left; margin-top: 10px; width: 100%;}
-        .collapsible:after { content: ' [+]'; float: right; font-weight: bold; }
-        .collapsible.active:after { content: " [-]"; }
-        .collapsible-content { display: none; padding: 10px; border: 1px solid var(--hacker-green); border-top: none; }
-        .p-item { cursor: pointer; padding: 5px; color: #fff; font-size: 0.9rem;}
-        .p-item:hover { background: rgba(0, 255, 0, 0.3); }
-
-        /* Status Panels */
-        #user-info { margin-top: auto; border: 1px solid var(--hacker-green); padding: 10px; text-align: center;}
-        #owner-panel { border: 2px solid #f00; color: #f00; padding: 10px; margin-top: 10px; display: none; text-align: center;}
-        #owner-panel input { border: 1px solid #f00; color: #f00;}
-        #owner-panel button { border: 2px solid #f00; color: #f00;}
-        #owner-panel button:hover { background: #f00; color: #fff; }
-
-        /* Right Side (Content Area) */
-        .main-content { flex: 1; padding: 20px; overflow-y: scroll; display: flex; flex-direction: column;}
-        .main-content h1 { border-bottom: 2px solid var(--hacker-green); padding-bottom: 10px;}
-        
-        /* Pages */
-        .page { display: none; }
-        .page.active { display: block; }
-
-        /* Matrix Drop Animation */
-        @keyframes matrixDrop {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-        
+        /* FLOATING CHAT */
+        #floating-elements { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; align-items: center; }
+        .user-mode-glow { border: 2px solid var(--hacker-green); color: var(--hacker-green); padding: 5px 10px; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
-    <script>
-        // Generate Matrix background content
-        let matrix = '';
-        for (let i = 0; i < 5000; i++) {
-            matrix += Math.round(Math.random());
-            if (i % 100 === 0) matrix += '<br>';
-        }
-        document.body.insertAdjacentHTML('beforeend', `<div id="matrix-bg">${matrix}</div>`);
-    </script>
 
-    <div id="login-wrapper">
-        <div style="border: 2px solid var(--hacker-green); padding: 40px; border-radius: 10px; background: rgba(0, 15, 0, 0.9);">
-            <h1>SECURITY.PROTOCOL // ACCESS>HUB</h1>
-            <p>CHOOSE USERNAME / SIGN IN</p>
-            <input type="text" id="username" placeholder="USERNAME" autofocus>
-            <input type="password" id="password" placeholder="PASSWORD">
-            <br>
-            <button onclick="checkAuth()">[Initialize Authenticate]</button>
-            <button onclick="registerUser()" style="border: 1px solid #777; color: #777;">[Initialize Register]</button>
-            <p id="error-log" style="color:red; display:none; margin-top:10px;"></p>
+<canvas id="matrix"></canvas>
+
+<div id="login-screen">
+    <div class="login-container">
+        <h1 class="login-title">$ Cyberwave</h1>
+        <div class="login-subtitle">[ access_terminal ]</div>
+        <label>> USERNAME:</label>
+        <input type="text" id="usr_in" placeholder="Username...">
+        <label>> PASSWORD:</label>
+        <input type="password" id="pwd_in" placeholder="Password...">
+        <button class="login-btn" onclick="executeCreateAccount()">[CREATE_ACCOUNT]</button>
+        <button class="login-btn blue" onclick="executeLogin()">[EXECUTE_LOGIN]</button>
+        <div id="auth-status" style="color:red; font-size:12px; display:none;"></div>
+    </div>
+</div>
+
+<div id="main-app">
+    <aside class="sidebar">
+        <h2 style="color:var(--hacker-green)">CYBERWAVE</h2>
+        <button class="launch-btn" style="background:none; border:1px solid var(--btn-blue); color:var(--btn-blue)" onclick="executeLogout()">LOGOUT</button>
+        
+        <div id="admin-sidebar-tools" style="display:none; margin-top:30px;">
+            <p style="color:var(--admin-gold)">[ ADMIN PANEL ]</p>
         </div>
-    </div>
-
-    <div id="app-wrapper">
-        <aside class="sidebar">
-            <h2 class="logo">CYBER<span style="color:#fff">WAVE</span></h2>
-            <div class="nav-item active" onclick="showPage('overview')">OVERVIEW</div>
-            
-            <button class="collapsible" id="coll-btn">Network // Proxies</button>
-            <div class="collapsible-content" id="proxy-list">
-                <p class="p-item" onclick="window.open('https://overdih.netcrypto.org/', '_blank')">Overcloaked</p>
-                <p class="p-item" onclick="alert('Establishing Dreamscape...')">DayDream X</p>
-                <p class="p-item" onclick="alert('Routing to Interstellar...')">Interstellar</p>
-                <p class="p-item" onclick="alert('Opening Utopia Network...')">Utopia</p>
-                <p class="p-item" onclick="window.open('https://vapor.netcrypto.org/', '_blank')">Vapor V4</p>
-                <p class="p-item" onclick="alert('Shadow Network Locked.')">Shadow</p>
+    </aside>
+    <main class="main-content">
+        <div id="hub-content">
+            <h1>Mirrors</h1>
+            <div class="proxy-card">
+                <h3>Nebula Sector</h3>
+                <p style="color:#888">Status: Unlocked</p>
+                <button class="launch-btn" onclick="showLinks()">Open Overcloaked</button>
             </div>
 
-            <div class="nav-item" onclick="logout()">LOGOUT</div>
-
-            <section id="user-info">
-                <p>Status: [Authenticated]</p>
-                <p>Active ID: <span id="sys-auth"></span></p>
-            </section>
-
-            <section id="owner-panel">
-                <h3 style="color:#f00; font-weight:bold;">ROOT CONTROL</h3>
-                <input type="text" id="ban-target" placeholder="TARGET IP / ID">
-                <button onclick="adminBan()">[TERMINATE_USER]</button>
-            </section>
-        </aside>
-
-        <main class="main-content">
-            <div id="page-overview" class="page active">
-                <h1>// CENTRAL DATABASE //</h1>
-                <p style="color:#fff;">Welcome to the secure hub. Local session active.</p>
-                <p>> Status: All sectors online.</p>
-                <p>> Warning: This system is for authorized use only.</p>
+            <div id="admin-view" style="display:none;">
+                <h2 style="color:var(--admin-gold)">User Management</h2>
+                <div id="user-list-container" class="admin-block"></div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+</div>
 
-    <script>
-        // COLLAPSIBLE LOGIC
-        const collBtn = document.getElementById('coll-btn');
-        const collContent = document.getElementById('proxy-list');
+<div id="links-page">
+    <button class="launch-btn" style="width:auto; margin-bottom:20px;" onclick="goHome()"><- Back</button>
+    <h1>OVERCLOAKED SECTOR</h1>
+    <div id="links-list"></div>
+</div>
 
-        collBtn.addEventListener('click', function() {
-            this.classList.toggle('active');
-            if (collContent.style.display === "block") {
-                collContent.style.display = "none";
-            } else {
-                collContent.style.display = "block";
-            }
-        });
+<div id="floating-elements">
+    <div id="user-indicator" class="user-mode-glow" style="display:none;">[USER]</div>
+    <div style="font-size:24px; cursor:pointer;" onclick="alert('Secure Chat Required')">💬</div>
+</div>
 
-        // PRESET ADMINISTRATIVE CREDENTIALS
-        const OWNER_USR = "_techrobyte";
-        const OWNER_PWD = "techyy";
+<script>
+    const ADMIN_USR = '_techrobyte';
+    const ADMIN_PWD = '_techyy';
+    const proxyLinks = ["https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", "https://rariripsck.vngeek.com/", "https://singingfiles.com/show.php?l=0&u=1637402&id=73209"];
 
-        const ADMINS = {};
-        for (let i = 1; i <= 10; i++) {
-            ADMINS[`admin${i}`] = `Cyber${i}`;
+    function executeCreateAccount() {
+        const u = document.getElementById('usr_in').value;
+        const p = document.getElementById('pwd_in').value;
+        if(u === ADMIN_USR) return alert("System ID Reserved");
+        localStorage.setItem('upwd_' + u, JSON.stringify({pass: p, id: Date.now(), banned: false}));
+        alert("Account Registered Locally.");
+    }
+
+    function executeLogin() {
+        const u = document.getElementById('usr_in').value;
+        const p = document.getElementById('pwd_in').value;
+        if(u === ADMIN_USR && p === ADMIN_PWD) return enterApp(true);
+        
+        const data = JSON.parse(localStorage.getItem('upwd_' + u));
+        if(data && data.pass === p && !data.banned) return enterApp(false);
+        alert("Access Denied.");
+    }
+
+    function enterApp(isAdmin) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'grid';
+        document.getElementById('user-indicator').style.display = 'block';
+        if(isAdmin) {
+            document.getElementById('admin-view').style.display = 'block';
+            renderUsers();
         }
+    }
 
-        // AUTHENTICATION LOGIC (using LocalStorage)
-        function checkAuth() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            const log = document.getElementById('error-log');
-
-            log.style.display = "none";
-            
-            if (!u || !p) {
-                log.innerText = "ERROR: Missing credentials.";
-                log.style.display = "block";
-                return;
-            }
-
-            // A. Check against Banned List
-            if (localStorage.getItem('ban_' + u)) {
-                log.innerText = "ACCESS_DENIED: Critical User Error.";
-                log.style.display = "block";
-                return;
-            }
-
-            // B. Special Checks: Owner and Admin (Static)
-            let authSuccess = false;
-
-            if (u === OWNER_USR && p === OWNER_PWD) {
-                authSuccess = true;
-                // Special: Show Owner Panel
-                document.getElementById('owner-panel').style.display = "block";
-            } else if (ADMINS[u] && ADMINS[u] === p) {
-                authSuccess = true;
-            } else {
-                // C. Local Registered Users Check
-                const storedPwd = localStorage.getItem('user_' + u);
-                if (storedPwd && storedPwd === p) {
-                    authSuccess = true;
-                }
-            }
-
-            if (authSuccess) {
-                loginSuccess(u);
-            } else {
-                log.innerText = "ACCESS_DENIED: Invalid login.";
-                log.style.display = "block";
-            }
-        }
-
-        function registerUser() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            const log = document.getElementById('error-log');
-
-            log.style.display = "none";
-
-            if (u.length < 3 || p.length < 3) {
-                log.innerText = "ERROR: Name/Password too short.";
-                log.style.display = "block";
-                return;
-            }
-
-            // Prevent registration of preset names
-            if (u === OWNER_USR || ADMINS[u]) {
-                log.innerText = "ERROR: Secure ID exists.";
-                log.style.display = "block";
-                return;
-            }
-
-            if (localStorage.getItem('user_' + u)) {
-                log.innerText = "ERROR: Username taken.";
-                log.style.display = "block";
-                return;
-            }
-
-            // Success: Register in LocalStorage
-            localStorage.setItem('user_' + u, p);
-            log.innerText = "Success: ID registered. Please log in.";
-            log.style.display = "block";
-            log.style.color = "#fff"; // Temporary feedback
-        }
-
-        function loginSuccess(u) {
-            document.getElementById('login-wrapper').classList.add('hidden');
-            document.getElementById('app-wrapper').classList.add('active');
-            document.getElementById('sys-auth').innerText = u;
-        }
-
-        function adminBan() {
-            const target = document.getElementById('ban-target').value;
-            if (target && target !== OWNER_USR) {
-                localStorage.setItem('ban_' + target, 'true');
-                alert(`User ${target} access terminated.`);
-                document.getElementById('ban-target').value = '';
-            } else if (target === OWNER_USR) {
-                alert("Cannot terminate system root.");
-            }
-        }
-
-        // SPA Navigation
-        function showPage(pageId) {
-            // Hide all pages
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            // Hide all nav highlights
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-
-            // Show selected page
-            document.getElementById(`page-${pageId}`).classList.add('active');
-            // Highlight current nav item (This assumes specific structure, simple for demo)
-            event.currentTarget.classList.add('active');
-        }
-
-        function logout() {
-            location.reload();
-        }
-    </script>
-</body>
-</html>
+    function renderUsers() {
+        const container = document.getElementById('user-list-container');
+        container.innerHTML = `<div class="user-card"><strong>${ADMIN_USR}</strong><br><button class="role-btn">👑 [ADMIN]</button></div>`;
+        for(let i=0; i<localStorage.length; i++){
+            const k = localStorage.key(i);
+            if(k.startsWith('upwd_')){
+                const user = k.replace('upwd_', '');
+                const d = JSON.parse(localStorage.getItem(k));
+                container.innerHTML += `
+                    <div class="user-card">
+                        $ ${user} | Pass: ${d.pass} <br>
+                        <button class="btn-danger" onclick="ban('${user}')">${d.banned ? 'UNBAN' : 'BAN'}</button>
+                        <button class="btn-danger" onclick="del('${user}')
