@@ -5,44 +5,79 @@
     <title>CYBERWAVE // MISSION_CONTROL</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
     <style>
-        :root { --hacker-green: #00ff41; --bg-dark: #0a0e1a; --btn-blue: #58a6ff; --admin-gold: #f4d03f; --ban-red: #ff3333; }
+        :root { 
+            --hacker-green: #00ff41; 
+            --bg-dark: #0a0e1a; 
+            --btn-blue: #58a6ff; 
+            --admin-gold: #f4d03f; 
+            --ban-red: #ff3333; 
+        }
+        
         * { box-sizing: border-box; font-family: 'Lexend', sans-serif; font-weight: 500; }
         
+        /* POP ANIMATION */
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            70% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .pop-effect { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
         body, html { background: var(--bg-dark); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
 
-        /* MATRIX BACKGROUND */
         #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; }
 
-        /* 1. LOGIN SCREEN */
+        /* LOGIN SCREEN */
         #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
-        .login-container { width: 450px; padding: 40px; background: rgba(10, 14, 26, 0.95); border-radius: 8px; border: 1px solid #1a2234; }
+        .login-container { 
+            width: 450px; padding: 40px; 
+            background: rgba(10, 14, 26, 0.95); 
+            border-radius: 12px; 
+            border: 1px solid #1a2234; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
         .login-title { color: var(--hacker-green); font-size: 42px; margin-bottom: 10px; }
-        .login-subtitle { color: #888; font-size: 14px; margin-bottom: 30px; }
-        label { display: block; color: var(--hacker-green); margin-bottom: 10px; }
-        input { width: 100%; background: #05070f; border: 1px solid #1a2234; color: #fff; padding: 15px; border-radius: 5px; margin-bottom: 25px; outline: none; }
-        .login-btn { width: 100%; padding: 15px; border-radius: 5px; margin-bottom: 15px; cursor: pointer; background: transparent; border: 2px solid var(--hacker-green); color: var(--hacker-green); }
+        label { display: block; color: var(--hacker-green); margin-bottom: 10px; font-size: 14px; }
+        
+        input { 
+            width: 100%; background: #05070f; border: 1px solid #1a2234; 
+            color: #fff; padding: 15px; border-radius: 8px; margin-bottom: 25px; 
+            outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--hacker-green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
+
+        .login-btn { 
+            width: 100%; padding: 15px; border-radius: 8px; margin-bottom: 15px; 
+            cursor: pointer; background: transparent; border: 2px solid var(--hacker-green); 
+            color: var(--hacker-green); font-weight: bold;
+        }
+        .login-btn:active { transform: scale(0.98); }
         .login-btn.blue { border-color: var(--btn-blue); color: var(--btn-blue); }
 
-        /* 2. MAIN HUB */
+        /* MAIN HUB */
         #main-app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
         .sidebar { background: #05070f; border-right: 1px solid #1a2234; padding: 20px; }
         .main-content { padding: 40px; overflow-y: auto; }
-        .proxy-card { background: #0d1117; border: 1px solid #30363d; border-radius: 10px; padding: 25px; text-align: center; margin-bottom: 20px; }
-        .launch-btn { background: #3fb950; color: #fff; padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; width: 100%; margin-top: 10px; }
 
-        /* 3. ADMIN PANEL STYLE */
-        .admin-block { background: #1c1c2b; border-radius: 5px; padding: 20px; margin-top: 20px; border-bottom: 2px solid var(--hacker-green); }
-        .user-card { border-bottom: 1px solid #30363d; padding: 15px 0; }
-        .role-btn { background: none; border: 2px solid var(--admin-gold); color: var(--admin-gold); padding: 5px 10px; margin: 10px 0; border-radius: 4px; }
-        .btn-danger { background: none; border: 1px solid var(--ban-red); color: var(--ban-red); padding: 5px 10px; cursor: pointer; margin-right: 5px; }
+        .proxy-card { 
+            background: #0d1117; border: 1px solid #30363d; 
+            border-radius: 10px; padding: 25px; text-align: center; 
+            margin-bottom: 20px; transition: 0.3s;
+        }
+        .proxy-card:hover { border-color: var(--hacker-green); transform: translateY(-5px); }
 
-        /* 4. OVERCLOAKED PAGE */
-        #links-page { display: none; padding: 40px; height: 100vh; overflow-y: auto; }
-        .link-row { display: flex; justify-content: space-between; align-items: center; background: #0d1117; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #30363d; }
+        .launch-btn { background: #3fb950; color: #fff; padding: 12px; border-radius: 8px; border: none; cursor: pointer; width: 100%; font-weight: bold; }
+
+        /* ADMIN PANEL */
+        .admin-block { background: #1c1c2b; border-radius: 8px; padding: 20px; border-bottom: 3px solid var(--hacker-green); }
+        .user-card { border-bottom: 1px solid #30363d; padding: 15px 0; animation: popIn 0.3s ease; }
+        .btn-danger { background: none; border: 1px solid var(--ban-red); color: var(--ban-red); padding: 5px 10px; cursor: pointer; border-radius: 4px; }
 
         /* FLOATING CHAT */
-        #floating-elements { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; align-items: center; }
-        .user-mode-glow { border: 2px solid var(--hacker-green); color: var(--hacker-green); padding: 5px 10px; border-radius: 4px; font-size: 12px; }
+        #floating-elements { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; align-items: center; }
+        .user-mode-glow { border: 2px solid var(--hacker-green); color: var(--hacker-green); padding: 5px 15px; border-radius: 20px; font-size: 12px; box-shadow: 0 0 10px var(--hacker-green); }
     </style>
 </head>
 <body>
@@ -50,39 +85,37 @@
 <canvas id="matrix"></canvas>
 
 <div id="login-screen">
-    <div class="login-container">
+    <div class="login-container pop-effect">
         <h1 class="login-title">$ Cyberwave</h1>
-        <div class="login-subtitle">[ access_terminal ]</div>
-        <label>> USERNAME:</label>
-        <input type="text" id="usr_in" placeholder="Username...">
-        <label>> PASSWORD:</label>
-        <input type="password" id="pwd_in" placeholder="Password...">
+        <p style="color: #888; font-size: 12px; margin-bottom: 20px;">SYSTEM ARCHITECTURE V2.1</p>
+        
+        <label>> IDENTITY:</label>
+        <input type="text" id="usr_in" placeholder="Username..." autocomplete="off">
+        
+        <label>> SEC_STRING:</label>
+        <input type="password" id="pwd_in" placeholder="Password..." autocomplete="off">
+        
         <button class="login-btn" onclick="executeCreateAccount()">[CREATE_ACCOUNT]</button>
         <button class="login-btn blue" onclick="executeLogin()">[EXECUTE_LOGIN]</button>
-        <div id="auth-status" style="color:red; font-size:12px; display:none;"></div>
     </div>
 </div>
 
 <div id="main-app">
     <aside class="sidebar">
-        <h2 style="color:var(--hacker-green)">CYBERWAVE</h2>
-        <button class="launch-btn" style="background:none; border:1px solid var(--btn-blue); color:var(--btn-blue)" onclick="executeLogout()">LOGOUT</button>
-        
-        <div id="admin-sidebar-tools" style="display:none; margin-top:30px;">
-            <p style="color:var(--admin-gold)">[ ADMIN PANEL ]</p>
-        </div>
+        <h2 style="color:var(--hacker-green); margin-bottom: 40px;">CYBERWAVE</h2>
+        <button class="launch-btn" style="background:none; border:1px solid var(--btn-blue); color:var(--btn-blue)" onclick="location.reload()">TERMINATE SESSION</button>
     </aside>
     <main class="main-content">
-        <div id="hub-content">
-            <h1>Mirrors</h1>
+        <div id="hub-content" class="pop-effect">
+            <h1>Active Sectors</h1>
             <div class="proxy-card">
-                <h3>Nebula Sector</h3>
-                <p style="color:#888">Status: Unlocked</p>
-                <button class="launch-btn" onclick="showLinks()">Open Overcloaked</button>
+                <h3>Nebula Mirror</h3>
+                <p style="color:#555; margin-bottom: 15px;">Encrypted Tunnel Connection</p>
+                <button class="launch-btn" onclick="showLinks()">View Overcloaked Links</button>
             </div>
 
             <div id="admin-view" style="display:none;">
-                <h2 style="color:var(--admin-gold)">User Management</h2>
+                <h2 style="color:var(--admin-gold); margin-top: 40px;">Root Database</h2>
                 <div id="user-list-container" class="admin-block"></div>
             </div>
         </div>
@@ -90,37 +123,66 @@
 </div>
 
 <div id="links-page">
-    <button class="launch-btn" style="width:auto; margin-bottom:20px;" onclick="goHome()"><- Back</button>
-    <h1>OVERCLOAKED SECTOR</h1>
-    <div id="links-list"></div>
+    <div class="pop-effect" style="max-width: 800px; margin: 0 auto;">
+        <button class="launch-btn" style="width:auto; margin-bottom:30px; background:#333;" onclick="goHome()"><- Return to Hub</button>
+        <h1 style="color:var(--btn-blue)">OVERCLOAKED SECTOR</h1>
+        <div id="links-list"></div>
+    </div>
 </div>
 
 <div id="floating-elements">
-    <div id="user-indicator" class="user-mode-glow" style="display:none;">[USER]</div>
-    <div style="font-size:24px; cursor:pointer;" onclick="alert('Secure Chat Required')">💬</div>
+    <div id="user-indicator" class="user-mode-glow" style="display:none;">ONLINE</div>
+    <div style="font-size:28px; cursor:pointer;" onclick="vibrateDevice(); alert('Secure Chat Offline')">💬</div>
 </div>
 
 <script>
     const ADMIN_USR = '_techrobyte';
     const ADMIN_PWD = '_techyy';
-    const proxyLinks = ["https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", "https://rariripsck.vngeek.com/", "https://singingfiles.com/show.php?l=0&u=1637402&id=73209"];
+    const proxyLinks = ["https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", "https://rariripsck.vngeek.com/"];
+
+    // Sound effect (Digital chime)
+    const finishSound = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
+
+    function playFinish() {
+        finishSound.currentTime = 0;
+        finishSound.play();
+        vibrateDevice();
+    }
+
+    function vibrateDevice() {
+        if ("vibrate" in navigator) {
+            navigator.vibrate(100); // 100ms haptic tap
+        }
+    }
 
     function executeCreateAccount() {
         const u = document.getElementById('usr_in').value;
         const p = document.getElementById('pwd_in').value;
-        if(u === ADMIN_USR) return alert("System ID Reserved");
-        localStorage.setItem('upwd_' + u, JSON.stringify({pass: p, id: Date.now(), banned: false}));
+        if(!u || !p) return;
+        if(u === ADMIN_USR) return alert("Reserved System ID");
+        
+        localStorage.setItem('upwd_' + u, JSON.stringify({pass: p, banned: false}));
+        playFinish();
         alert("Account Registered Locally.");
     }
 
     function executeLogin() {
         const u = document.getElementById('usr_in').value;
         const p = document.getElementById('pwd_in').value;
-        if(u === ADMIN_USR && p === ADMIN_PWD) return enterApp(true);
+        
+        if(u === ADMIN_USR && p === ADMIN_PWD) {
+            playFinish();
+            return enterApp(true);
+        }
         
         const data = JSON.parse(localStorage.getItem('upwd_' + u));
-        if(data && data.pass === p && !data.banned) return enterApp(false);
-        alert("Access Denied.");
+        if(data && data.pass === p && !data.banned) {
+            playFinish();
+            return enterApp(false);
+        }
+        
+        vibrateDevice();
+        alert("ACCESS DENIED");
     }
 
     function enterApp(isAdmin) {
@@ -135,7 +197,7 @@
 
     function renderUsers() {
         const container = document.getElementById('user-list-container');
-        container.innerHTML = `<div class="user-card"><strong>${ADMIN_USR}</strong><br><button class="role-btn">👑 [ADMIN]</button></div>`;
+        container.innerHTML = `<div class="user-card" style="color:var(--admin-gold)"><strong>${ADMIN_USR}</strong> (SYSTEM ROOT)</div>`;
         for(let i=0; i<localStorage.length; i++){
             const k = localStorage.key(i);
             if(k.startsWith('upwd_')){
@@ -143,6 +205,65 @@
                 const d = JSON.parse(localStorage.getItem(k));
                 container.innerHTML += `
                     <div class="user-card">
-                        $ ${user} | Pass: ${d.pass} <br>
+                        $ ${user} | Pass: ${d.pass} <br><br>
                         <button class="btn-danger" onclick="ban('${user}')">${d.banned ? 'UNBAN' : 'BAN'}</button>
-                        <button class="btn-danger" onclick="del('${user}')
+                        <button class="btn-danger" onclick="del('${user}')">DELETE</button>
+                    </div>`;
+            }
+        }
+    }
+
+    function ban(u) {
+        let d = JSON.parse(localStorage.getItem('upwd_' + u));
+        d.banned = !d.banned;
+        localStorage.setItem('upwd_' + u, JSON.stringify(d));
+        vibrateDevice();
+        renderUsers();
+    }
+
+    function del(u) {
+        if(confirm("Confirm deletion?")) {
+            localStorage.removeItem('upwd_' + u);
+            vibrateDevice();
+            renderUsers();
+        }
+    }
+
+    function showLinks() {
+        playFinish();
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('links-page').style.display = 'block';
+        const list = document.getElementById('links-list');
+        list.innerHTML = "";
+        proxyLinks.forEach((url, i) => {
+            list.innerHTML += `
+                <div class="proxy-card pop-effect" style="display:flex; justify-content:space-between; align-items:center; text-align:left;">
+                    <div><strong>OVERCLOAKED #${i+1}</strong><br><small style="color:#555">Ready for tunnel</small></div>
+                    <button class="launch-btn" style="width:auto; padding:10px 25px;" onclick="window.open('${url}', '_blank')">CONNECT</button>
+                </div>`;
+        });
+    }
+
+    function goHome() {
+        document.getElementById('links-page').style.display = 'none';
+        document.getElementById('main-app').style.display = 'grid';
+    }
+
+    // MATRIX BG
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    const drops = Array(Math.floor(canvas.width/16)).fill(1);
+    function draw() {
+        ctx.fillStyle = "rgba(10, 14, 26, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#00ff41"; ctx.font = "16px monospace";
+        drops.forEach((y, i) => {
+            ctx.fillText(Math.round(Math.random()), i * 16, y * 16);
+            if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        });
+    }
+    setInterval(draw, 30);
+</script>
+</body>
+</html>
