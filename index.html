@@ -2,109 +2,219 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CYBERWAVE // MISSION_CONTROL</title>
+    <title>Google Drive</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">
     <style>
-        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --sidebar-bg: #05070f; --admin-gold: #f4d03f; --red: #ff3333; }
+        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --sidebar: #05070f; --gold: #f4d03f; --red: #ff3333; }
         * { box-sizing: border-box; font-family: 'Lexend', sans-serif; font-weight: 500; }
         
         body, html { background: var(--bg); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.1; }
 
         @keyframes pop { 0% { transform: scale(0.98); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .pop { animation: pop 0.3s ease-out; }
 
-        /* Login Screen */
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; z-index: 10; position: relative; }
-        .login-box { width: 400px; padding: 40px; background: rgba(10, 14, 26, 0.98); border: 1px solid #1a2234; border-radius: 12px; }
-        h1 { color: var(--green); margin: 0 0 20px 0; }
-        label { display: block; color: var(--green); margin-bottom: 8px; font-size: 12px; }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #1a2234; color: #fff; border-radius: 6px; margin-bottom: 20px; outline: none; }
-        .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; cursor: pointer; border: 2px solid var(--green); background: transparent; color: var(--green); font-weight: bold; }
+        /* Login */
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; position: relative; z-index: 10; }
+        .login-box { width: 400px; padding: 40px; background: rgba(10, 14, 26, 0.98); border: 1px solid #1a2234; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,1); }
+        h1 { color: var(--green); margin: 0 0 10px 0; font-size: 32px; }
+        label { display: block; color: var(--green); margin: 15px 0 5px 0; font-size: 11px; letter-spacing: 1px; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #1a2234; color: #fff; border-radius: 6px; margin-bottom: 10px; outline: none; }
+        .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; cursor: pointer; border: 2px solid var(--green); background: transparent; color: var(--green); font-weight: bold; transition: 0.2s; }
         .btn-login { border-color: var(--blue); color: var(--blue); }
+        .btn:active { transform: scale(0.95); }
 
-        /* FIXED SIDEBAR */
+        /* Sidebar & Layout */
         #app { display: none; height: 100vh; width: 100%; position: relative; }
-        .side-panel { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid #1a2234; padding: 40px 20px; display: flex; flex-direction: column; z-index: 100; }
-        .nav-item { padding: 15px; border-radius: 10px; cursor: pointer; color: #666; transition: 0.2s; margin-bottom: 10px; font-size: 14px; border: 1px solid transparent; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        .nav-item.active { background: rgba(0, 255, 65, 0.1); color: var(--green); border-color: var(--green); }
+        .side-panel { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: var(--sidebar); border-right: 1px solid #1a2234; padding: 40px 20px; display: flex; flex-direction: column; z-index: 100; }
+        .nav-item { padding: 15px; border-radius: 10px; cursor: pointer; color: #444; transition: 0.2s; margin-bottom: 8px; font-size: 13px; border: 1px solid transparent; }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.03); }
+        .nav-item.active { background: rgba(0, 255, 65, 0.05); color: var(--green); border: 1px solid var(--green); }
 
-        .main-view { margin-left: 260px; padding: 60px; height: 100vh; overflow-y: auto; }
+        .main-view { margin-left: 260px; padding: 60px; height: 100vh; overflow-y: auto; position: relative; }
 
-        /* COLLAPSIBLE */
+        /* Encrypted Collapsible */
         .collapsible { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-        .collapsible-header { background: #161b22; padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; }
-        .collapsible-content { display: none; padding: 20px; background: #0d1117; }
+        .collapsible-header { background: #161b22; padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .collapsible-content { display: none; padding: 10px; background: #0d1117; }
         .collapsible-content.active { display: block; }
 
         .proxy-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
         .proxy-row:last-child { border-bottom: none; }
         
-        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
-        .btn-small { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-
-        /* EMBED FRAME */
-        #frame-container { display:none; position: fixed; top:0; left:260px; right:0; bottom:0; background:#000; z-index:1000; }
+        /* Panic Iframe Overlay */
+        #frame-wrap { display:none; position: fixed; top:0; left:260px; right:0; bottom:0; background:#000; z-index:1000; }
         iframe { width:100%; height:100%; border:none; }
+        #panic-btn { position:fixed; top:10px; right:10px; z-index:1001; background:var(--red); color:#fff; border:none; padding:8px 15px; cursor:pointer; border-radius:5px; font-size:10px; font-weight: bold; }
+
+        /* User Root Section */
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<canvas id="canvas"></canvas>
+<canvas id="m"></canvas>
 
 <div id="login-screen">
     <div class="login-box pop">
         <h1>$ Cyberwave</h1>
+        <p style="color:#444; font-size:10px; margin-top:-10px;">SECURE_KERNEL V3.0</p>
         <label>> IDENTITY</label>
-        <input type="text" id="u" placeholder="Username" autocomplete="off">
+        <input type="text" id="u" placeholder="..." autocomplete="off">
         <label>> SEC_STRING</label>
-        <input type="password" id="p" placeholder="Password" autocomplete="off">
-        <button class="btn" onclick="register()">[CREATE_ACCOUNT]</button>
-        <button class="btn btn-login" onclick="login()">[EXECUTE_LOGIN]</button>
+        <input type="password" id="p" placeholder="..." autocomplete="off">
+        <button class="btn" onclick="reg()">[CREATE_ACCOUNT]</button>
+        <button class="btn btn-login" onclick="auth()">[EXECUTE_LOGIN]</button>
     </div>
 </div>
 
 <div id="app">
     <div class="side-panel">
-        <h2 style="color:var(--green); margin-bottom: 40px;">CYBERWAVE</h2>
-        <div class="nav-item active" id="nav-proxies" onclick="switchTab('proxies')">🌐 PROXIES</div>
-        <div id="admin-nav" class="nav-item" style="display:none;" onclick="switchTab('admin')">🔑 ROOT_ACCESS</div>
-        <div class="nav-item" style="margin-top: auto; color: var(--red);" onclick="location.reload()">LOGOUT</div>
+        <h2 style="color:var(--green); margin-bottom: 30px; letter-spacing: 1px;">CYBERWAVE</h2>
+        <div class="nav-item active" id="n-prox" onclick="tab('prox')">🌐 PROXIES</div>
+        <div id="n-admin" class="nav-item" style="display:none;" onclick="tab('admin')">🔑 ROOT_ACCESS</div>
+        <div class="nav-item" style="margin-top: auto; color: var(--red); opacity: 0.5;" onclick="location.reload()">TERMINATE</div>
     </div>
 
-    <div class="main-view" id="main-view">
-        <div id="view-proxies" class="pop">
+    <div class="main-view">
+        <div id="v-prox" class="pop">
             <h1 style="margin-bottom: 30px;">Network Exit Nodes</h1>
-            
             <div class="collapsible">
-                <div class="collapsible-header" onclick="toggleCollapsible()">
-                    <span style="color:var(--blue); font-size: 18px;">⚡ OVERCLOAKED [BYPASS_ENABLED]</span>
-                    <span id="arrow">▼</span>
+                <div class="collapsible-header" onclick="toggle()">
+                    <span style="color:var(--blue);">⚡ OVERCLOAKED [ENCRYPTED]</span>
+                    <span id="arr">▼</span>
                 </div>
-                <div class="collapsible-content" id="proxy-list">
+                <div class="collapsible-content" id="p-list">
                     <div class="proxy-row">
-                        <span>Encrypted Node A</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launchProxy('https://overdih.netcrypto.org/')">LAUNCH</button>
+                        <span>Stealth Node 01</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launch('aHR0cHM6Ly9vdmVyZGloLm5ldGNyeXB0by5vcmcv')">OPEN</button>
                     </div>
                     <div class="proxy-row">
-                        <span>Stealth Node B</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launchProxy('https://mathedu.netcrypto.org/')">LAUNCH</button>
+                        <span>Stealth Node 02</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launch('aHR0cHM6Ly9tYXRoZWR1Lm5ldGNyeXB0by5vcmcv')">OPEN</button>
                     </div>
                     <div class="proxy-row">
-                        <span>Vapor Tunnel</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launchProxy('https://rariripsck.vngeek.com/')">LAUNCH</button>
+                        <span>Titan Tunnel</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launch('aHR0cHM6Ly9yYXJpcmlwc2NrLnZuZ2Vlay5jb20v')">OPEN</button>
                     </div>
                 </div>
             </div>
-            <p style="color:#444; font-size:12px;">* If links are blocked, use [ROOT_ACCESS] to check for updated IP strings.</p>
         </div>
 
-        <div id="view-admin" class="pop" style="display:none;">
-            <h1 style="color:var(--admin-gold); margin-bottom: 30px;">User Database</h1>
-            <div id="user-list" class="collapsible" style="padding:10px;"></div>
+        <div id="v-admin" class="pop" style="display:none;">
+            <h1 style="color:var(--gold); margin-bottom: 30px;">Root Database</h1>
+            <div id="u-list" class="collapsible" style="padding:10px;"></div>
         </div>
     </div>
 </div>
 
-<div
+<div id="frame-wrap">
+    <button id="panic-btn" onclick="closeP()">CLOSE (ESC)</button>
+    <iframe id="p-frame"></iframe>
+</div>
+
+<script>
+    // System Constants
+    const O = "_techrobyte";
+    const S = "_techyy";
+    const chime = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
+
+    // Panic Key: Hit ESC to instantly hide everything
+    window.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            if(document.getElementById('frame-wrap').style.display === 'block') {
+                closeP();
+            } else {
+                window.location.href = "https://classroom.google.com";
+            }
+        }
+    });
+
+    function toggle() {
+        const c = document.getElementById('p-list');
+        const a = document.getElementById('arr');
+        c.classList.toggle('active');
+        a.innerText = c.classList.contains('active') ? '▲' : '▼';
+    }
+
+    function launch(encUrl) {
+        const url = atob(encUrl); // Decodes the Base64 URL
+        const f = document.getElementById('p-frame');
+        const w = document.getElementById('frame-wrap');
+        f.src = url;
+        w.style.display = 'block';
+        if(navigator.vibrate) navigator.vibrate(100);
+    }
+
+    function closeP() {
+        document.getElementById('frame-wrap').style.display = 'none';
+        document.getElementById('p-frame').src = '';
+    }
+
+    function reg() {
+        const user = document.getElementById('u').value.trim();
+        const pass = document.getElementById('p').value;
+        if(!user || !pass) return;
+        localStorage.setItem('sys_' + user, btoa(pass));
+        chime.play().catch(()=>{}); alert("ID Stored.");
+    }
+
+    function auth() {
+        const user = document.getElementById('u').value.trim();
+        const pass = document.getElementById('p').value;
+        if(user === O && pass === S) { chime.play().catch(()=>{}); return start(true); }
+        const data = localStorage.getItem('sys_' + user);
+        if(data && atob(data) === pass) { chime.play().catch(()=>{}); return start(false); }
+        alert("DENIED");
+    }
+
+    function start(isAdmin) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        if(isAdmin) { document.getElementById('n-admin').style.display = 'block'; load(); }
+        document.title = "Google Drive"; // Cloak the tab name
+    }
+
+    function tab(t) {
+        document.getElementById('v-prox').style.display = 'none';
+        document.getElementById('v-admin').style.display = 'none';
+        document.getElementById('n-prox').classList.remove('active');
+        document.getElementById('n-admin').classList.remove('active');
+        document.getElementById('v-' + t).style.display = 'block';
+        document.getElementById('n-' + t).classList.add('active');
+    }
+
+    function load() {
+        const list = document.getElementById('u-list');
+        list.innerHTML = `<div class="user-row" style="color:var(--gold)">👑 ${O} [SYSTEM ROOT]</div>`;
+        for(let i=0; i<localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if(k.startsWith('sys_')) {
+                const u = k.replace('sys_', '');
+                const p = atob(localStorage.getItem(k));
+                list.innerHTML += `<div class="user-row"><span>$ ${u} | PW: ${p}</span><button style="color:red; background:none; border:none; cursor:pointer;" onclick="del('${u}')">DEL</button></div>`;
+            }
+        }
+    }
+
+    function del(u) { localStorage.removeItem('sys_' + u); load(); }
+
+    // Visual Kernel (Binary)
+    const can = document.getElementById('m');
+    const ctx = can.getContext('2d');
+    can.width = window.innerWidth; can.height = window.innerHeight;
+    const d = Array(Math.floor(can.width/16)).fill(1);
+    function run() {
+        ctx.fillStyle = "rgba(10, 14, 26, 0.1)"; ctx.fillRect(0, 0, can.width, can.height);
+        ctx.fillStyle = "#0f0"; ctx.font = "16px monospace";
+        d.forEach((y, i) => {
+            ctx.fillText(Math.floor(Math.random()*2), i*16, y*16);
+            if(y*16 > can.height && Math.random() > 0.975) d[i] = 0;
+            d[i]++;
+        });
+    }
+    setInterval(run, 35);
+</script>
+</body>
+</html>
