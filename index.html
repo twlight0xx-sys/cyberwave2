@@ -32,18 +32,21 @@
 
         .main-view { margin-left: 260px; padding: 60px; height: 100vh; overflow-y: auto; }
 
-        /* COLLAPSIBLE SYSTEM */
+        /* COLLAPSIBLE */
         .collapsible { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
         .collapsible-header { background: #161b22; padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; }
-        .collapsible-header:hover { background: #1c2128; }
         .collapsible-content { display: none; padding: 20px; background: #0d1117; }
         .collapsible-content.active { display: block; }
 
-        .proxy-link-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #1a2234; }
-        .proxy-link-row:last-child { border-bottom: none; }
+        .proxy-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
+        .proxy-row:last-child { border-bottom: none; }
         
         .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
         .btn-small { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+
+        /* EMBED FRAME */
+        #frame-container { display:none; position: fixed; top:0; left:260px; right:0; bottom:0; background:#000; z-index:1000; }
+        iframe { width:100%; height:100%; border:none; }
     </style>
 </head>
 <body>
@@ -64,36 +67,37 @@
 
 <div id="app">
     <div class="side-panel">
-        <h2 style="color:var(--green); margin-bottom: 40px; letter-spacing: 2px;">CYBERWAVE</h2>
+        <h2 style="color:var(--green); margin-bottom: 40px;">CYBERWAVE</h2>
         <div class="nav-item active" id="nav-proxies" onclick="switchTab('proxies')">🌐 PROXIES</div>
         <div id="admin-nav" class="nav-item" style="display:none;" onclick="switchTab('admin')">🔑 ROOT_ACCESS</div>
         <div class="nav-item" style="margin-top: auto; color: var(--red);" onclick="location.reload()">LOGOUT</div>
     </div>
 
-    <div class="main-view">
+    <div class="main-view" id="main-view">
         <div id="view-proxies" class="pop">
             <h1 style="margin-bottom: 30px;">Network Exit Nodes</h1>
             
             <div class="collapsible">
                 <div class="collapsible-header" onclick="toggleCollapsible()">
-                    <span style="color:var(--blue); font-size: 18px;">⚡ OVERCLOAKED [UNBLOCKED]</span>
+                    <span style="color:var(--blue); font-size: 18px;">⚡ OVERCLOAKED [BYPASS_ENABLED]</span>
                     <span id="arrow">▼</span>
                 </div>
                 <div class="collapsible-content" id="proxy-list">
-                    <div class="proxy-link-row">
-                        <span>Static Node #1</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH</button>
+                    <div class="proxy-row">
+                        <span>Encrypted Node A</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launchProxy('https://overdih.netcrypto.org/')">LAUNCH</button>
                     </div>
-                    <div class="proxy-link-row">
-                        <span>Static Node #2</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="window.open('https://mathedu.netcrypto.org/')">LAUNCH</button>
+                    <div class="proxy-row">
+                        <span>Stealth Node B</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launchProxy('https://mathedu.netcrypto.org/')">LAUNCH</button>
                     </div>
-                    <div class="proxy-link-row">
+                    <div class="proxy-row">
                         <span>Vapor Tunnel</span>
-                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="window.open('https://rariripsck.vngeek.com/')">LAUNCH</button>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="launchProxy('https://rariripsck.vngeek.com/')">LAUNCH</button>
                     </div>
                 </div>
             </div>
+            <p style="color:#444; font-size:12px;">* If links are blocked, use [ROOT_ACCESS] to check for updated IP strings.</p>
         </div>
 
         <div id="view-admin" class="pop" style="display:none;">
@@ -103,80 +107,4 @@
     </div>
 </div>
 
-<script>
-    const OWNER = "_techrobyte";
-    const PASS = "_techyy";
-    const chime = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
-
-    function toggleCollapsible() {
-        const content = document.getElementById('proxy-list');
-        const arrow = document.getElementById('arrow');
-        content.classList.toggle('active');
-        arrow.innerText = content.classList.contains('active') ? '▲' : '▼';
-    }
-
-    function register() {
-        const user = document.getElementById('u').value.trim();
-        const pass = document.getElementById('p').value;
-        if(!user || !pass) return;
-        localStorage.setItem('cyber_' + user, JSON.stringify({pw: pass, b: false}));
-        chime.play(); alert("Local ID Created.");
-    }
-
-    function login() {
-        const user = document.getElementById('u').value.trim();
-        const pass = document.getElementById('p').value;
-        if(user === OWNER && pass === PASS) { chime.play(); return enter(true); }
-        const data = JSON.parse(localStorage.getItem('cyber_' + user));
-        if(data && data.pw === pass) { chime.play(); return enter(false); }
-        alert("ACCESS DENIED");
-    }
-
-    function enter(isAdmin) {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        if(isAdmin) { document.getElementById('admin-nav').style.display = 'block'; loadUsers(); }
-    }
-
-    function switchTab(tab) {
-        document.getElementById('view-proxies').style.display = 'none';
-        document.getElementById('view-admin').style.display = 'none';
-        document.getElementById('nav-proxies').classList.remove('active');
-        document.getElementById('admin-nav').classList.remove('active');
-        document.getElementById('view-' + tab).style.display = 'block';
-        document.getElementById('nav-' + (tab === 'proxies' ? 'proxies' : 'admin')).classList.add('active');
-    }
-
-    function loadUsers() {
-        const list = document.getElementById('user-list');
-        list.innerHTML = `<div class="user-row" style="color:var(--admin-gold)">👑 ${OWNER} (ROOT)</div>`;
-        for(let i=0; i<localStorage.length; i++) {
-            const k = localStorage.key(i);
-            if(k.startsWith('cyber_')) {
-                const u = k.replace('cyber_', '');
-                const d = JSON.parse(localStorage.getItem(k));
-                list.innerHTML += `<div class="user-row"><span>$ ${u} | PW: ${d.pw}</span><button class="btn-small" onclick="rem('${u}')">DEL</button></div>`;
-            }
-        }
-    }
-
-    function rem(u) { localStorage.removeItem('cyber_' + u); loadUsers(); }
-
-    // Matrix
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const drops = Array(Math.floor(canvas.width/16)).fill(1);
-    function draw() {
-        ctx.fillStyle = "rgba(10, 14, 26, 0.1)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0"; ctx.font = "16px monospace";
-        drops.forEach((y, i) => {
-            ctx.fillText(Math.floor(Math.random()*2), i*16, y*16);
-            if(y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    }
-    setInterval(draw, 35);
-</script>
-</body>
-</html>
+<div
