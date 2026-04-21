@@ -5,265 +5,183 @@
     <title>CYBERWAVE // MISSION_CONTROL</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --hacker-green: #00ff41; 
-            --bg-dark: #0a0e1a; 
-            --btn-blue: #58a6ff; 
-            --admin-gold: #f4d03f; 
-            --ban-red: #ff3333; 
-        }
-        
+        :root { --green: #00ff41; --blue: #58a6ff; --bg: #0a0e1a; --admin-gold: #f4d03f; --red: #ff3333; }
         * { box-sizing: border-box; font-family: 'Lexend', sans-serif; font-weight: 500; }
         
-        /* POP ANIMATION */
-        @keyframes popIn {
-            0% { transform: scale(0.9); opacity: 0; }
+        body, html { background: var(--bg); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
+
+        /* Pop Animation */
+        @keyframes pop { 
+            0% { transform: scale(0.9); opacity: 0; } 
             70% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; } 
         }
+        .pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .pop-effect { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        body, html { background: var(--bg-dark); color: #fff; margin: 0; height: 100vh; overflow: hidden; }
-
-        #matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; }
-
-        /* LOGIN SCREEN */
-        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
-        .login-container { 
-            width: 450px; padding: 40px; 
-            background: rgba(10, 14, 26, 0.95); 
-            border-radius: 12px; 
-            border: 1px solid #1a2234; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        /* Login Styling */
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .login-box { width: 420px; padding: 40px; background: rgba(10, 14, 26, 0.98); border: 1px solid #1a2234; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        h1 { color: var(--green); font-size: 38px; margin: 0 0 10px 0; }
+        label { display: block; color: var(--green); margin: 15px 0 8px 0; font-size: 13px; }
+        input { width: 100%; padding: 14px; background: #05070f; border: 1px solid #1a2234; color: #fff; border-radius: 8px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
         
-        .login-title { color: var(--hacker-green); font-size: 42px; margin-bottom: 10px; }
-        label { display: block; color: var(--hacker-green); margin-bottom: 10px; font-size: 14px; }
+        .btn { width: 100%; padding: 15px; margin-top: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; border: 2px solid var(--green); background: transparent; color: var(--green); }
+        .btn-login { border-color: var(--blue); color: var(--blue); }
+        .btn:active { transform: scale(0.96); }
+
+        /* Main Hub */
+        #hub { display: none; padding: 40px; height: 100vh; overflow-y: auto; }
+        .card { background: #0d1117; border: 1px solid #30363d; padding: 25px; border-radius: 12px; margin-top: 20px; transition: 0.3s; }
+        .card:hover { border-color: var(--green); }
         
-        input { 
-            width: 100%; background: #05070f; border: 1px solid #1a2234; 
-            color: #fff; padding: 15px; border-radius: 8px; margin-bottom: 25px; 
-            outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: var(--hacker-green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
+        /* Admin View */
+        .admin-section { border-top: 2px solid var(--admin-gold); margin-top: 50px; padding-top: 20px; }
+        .user-row { padding: 15px; border-bottom: 1px solid #1a2234; display: flex; justify-content: space-between; align-items: center; }
+        .btn-ban { border: 1px solid var(--red); color: var(--red); padding: 5px 10px; background: none; border-radius: 4px; cursor: pointer; }
 
-        .login-btn { 
-            width: 100%; padding: 15px; border-radius: 8px; margin-bottom: 15px; 
-            cursor: pointer; background: transparent; border: 2px solid var(--hacker-green); 
-            color: var(--hacker-green); font-weight: bold;
-        }
-        .login-btn:active { transform: scale(0.98); }
-        .login-btn.blue { border-color: var(--btn-blue); color: var(--btn-blue); }
-
-        /* MAIN HUB */
-        #main-app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
-        .sidebar { background: #05070f; border-right: 1px solid #1a2234; padding: 20px; }
-        .main-content { padding: 40px; overflow-y: auto; }
-
-        .proxy-card { 
-            background: #0d1117; border: 1px solid #30363d; 
-            border-radius: 10px; padding: 25px; text-align: center; 
-            margin-bottom: 20px; transition: 0.3s;
-        }
-        .proxy-card:hover { border-color: var(--hacker-green); transform: translateY(-5px); }
-
-        .launch-btn { background: #3fb950; color: #fff; padding: 12px; border-radius: 8px; border: none; cursor: pointer; width: 100%; font-weight: bold; }
-
-        /* ADMIN PANEL */
-        .admin-block { background: #1c1c2b; border-radius: 8px; padding: 20px; border-bottom: 3px solid var(--hacker-green); }
-        .user-card { border-bottom: 1px solid #30363d; padding: 15px 0; animation: popIn 0.3s ease; }
-        .btn-danger { background: none; border: 1px solid var(--ban-red); color: var(--ban-red); padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-
-        /* FLOATING CHAT */
-        #floating-elements { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; align-items: center; }
-        .user-mode-glow { border: 2px solid var(--hacker-green); color: var(--hacker-green); padding: 5px 15px; border-radius: 20px; font-size: 12px; box-shadow: 0 0 10px var(--hacker-green); }
+        /* Floating UI */
+        #floats { position: fixed; bottom: 20px; right: 20px; display: flex; align-items: center; gap: 15px; }
+        .status { border: 2px solid var(--green); color: var(--green); padding: 5px 12px; border-radius: 20px; font-size: 12px; box-shadow: 0 0 8px var(--green); }
     </style>
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
+<canvas id="canvas"></canvas>
 
 <div id="login-screen">
-    <div class="login-container pop-effect">
-        <h1 class="login-title">$ Cyberwave</h1>
-        <p style="color: #888; font-size: 12px; margin-bottom: 20px;">SYSTEM ARCHITECTURE V2.1</p>
+    <div class="login-box pop">
+        <h1>$ Cyberwave</h1>
+        <p style="color:#555; font-size:11px; margin-bottom: 20px;">VERSION 2.2 // BRAVE_OPTIMIZED</p>
         
-        <label>> IDENTITY:</label>
-        <input type="text" id="usr_in" placeholder="Username..." autocomplete="off">
+        <label>> IDENTITY</label>
+        <input type="text" id="u" placeholder="Enter Username..." autocomplete="off">
         
-        <label>> SEC_STRING:</label>
-        <input type="password" id="pwd_in" placeholder="Password..." autocomplete="off">
+        <label>> SEC_STRING</label>
+        <input type="password" id="p" placeholder="Enter Password..." autocomplete="off">
         
-        <button class="login-btn" onclick="executeCreateAccount()">[CREATE_ACCOUNT]</button>
-        <button class="login-btn blue" onclick="executeLogin()">[EXECUTE_LOGIN]</button>
+        <button class="btn" onclick="register()">[CREATE_ACCOUNT]</button>
+        <button class="btn btn-login" onclick="login()">[EXECUTE_LOGIN]</button>
     </div>
 </div>
 
-<div id="main-app">
-    <aside class="sidebar">
-        <h2 style="color:var(--hacker-green); margin-bottom: 40px;">CYBERWAVE</h2>
-        <button class="launch-btn" style="background:none; border:1px solid var(--btn-blue); color:var(--btn-blue)" onclick="location.reload()">TERMINATE SESSION</button>
-    </aside>
-    <main class="main-content">
-        <div id="hub-content" class="pop-effect">
-            <h1>Active Sectors</h1>
-            <div class="proxy-card">
-                <h3>Nebula Mirror</h3>
-                <p style="color:#555; margin-bottom: 15px;">Encrypted Tunnel Connection</p>
-                <button class="launch-btn" onclick="showLinks()">View Overcloaked Links</button>
-            </div>
-
-            <div id="admin-view" style="display:none;">
-                <h2 style="color:var(--admin-gold); margin-top: 40px;">Root Database</h2>
-                <div id="user-list-container" class="admin-block"></div>
-            </div>
-        </div>
-    </main>
-</div>
-
-<div id="links-page">
-    <div class="pop-effect" style="max-width: 800px; margin: 0 auto;">
-        <button class="launch-btn" style="width:auto; margin-bottom:30px; background:#333;" onclick="goHome()"><- Return to Hub</button>
-        <h1 style="color:var(--btn-blue)">OVERCLOAKED SECTOR</h1>
-        <div id="links-list"></div>
+<div id="hub" class="pop">
+    <h1 id="welc" style="color:var(--green)">HUB_CONNECTED</h1>
+    <div class="card">
+        <h3>Nebula Mainframe</h3>
+        <p style="color:#888">Secure Tunnel: ACTIVE</p>
+        <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH</button>
     </div>
+
+    <div id="admin" class="admin-section" style="display:none;">
+        <h2 style="color:var(--admin-gold)">Root Access Panel</h2>
+        <div id="user-list"></div>
+    </div>
+    
+    <button onclick="location.reload()" style="margin-top:30px; background:none; border:1px solid var(--red); color:var(--red); padding: 10px 20px; border-radius: 6px; cursor:pointer;">TERMINATE_SESSION</button>
 </div>
 
-<div id="floating-elements">
-    <div id="user-indicator" class="user-mode-glow" style="display:none;">ONLINE</div>
-    <div style="font-size:28px; cursor:pointer;" onclick="vibrateDevice(); alert('Secure Chat Offline')">💬</div>
+<div id="floats">
+    <div id="stat" class="status" style="display:none;">[ONLINE]</div>
+    <div style="font-size:24px; cursor:pointer;" onclick="alert('Chat Offline')">💬</div>
 </div>
 
 <script>
-    const ADMIN_USR = '_techrobyte';
-    const ADMIN_PWD = '_techyy';
-    const proxyLinks = ["https://overdih.netcrypto.org/", "https://mathedu.netcrypto.org/", "https://rariripsck.vngeek.com/"];
+    const OWNER = "_techrobyte";
+    const PASS = "_techyy";
+    const chime = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
 
-    // Sound effect (Digital chime)
-    const finishSound = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
-
-    function playFinish() {
-        finishSound.currentTime = 0;
-        finishSound.play();
-        vibrateDevice();
+    function playSfx() {
+        chime.currentTime = 0;
+        chime.play().catch(() => {}); // Catch Brave's auto-play block
+        if(navigator.vibrate) navigator.vibrate(100);
     }
 
-    function vibrateDevice() {
-        if ("vibrate" in navigator) {
-            navigator.vibrate(100); // 100ms haptic tap
-        }
+    function register() {
+        const user = document.getElementById('u').value.trim();
+        const pass = document.getElementById('p').value;
+        if(!user || !pass) return;
+        if(user === OWNER) return alert("System ID Reserved");
+        
+        localStorage.setItem('cyber_' + user, JSON.stringify({pw: pass, b: false}));
+        playSfx();
+        alert("Local Registration Successful.");
     }
 
-    function executeCreateAccount() {
-        const u = document.getElementById('usr_in').value;
-        const p = document.getElementById('pwd_in').value;
-        if(!u || !p) return;
-        if(u === ADMIN_USR) return alert("Reserved System ID");
+    function login() {
+        const user = document.getElementById('u').value.trim();
+        const pass = document.getElementById('p').value;
         
-        localStorage.setItem('upwd_' + u, JSON.stringify({pass: p, banned: false}));
-        playFinish();
-        alert("Account Registered Locally.");
-    }
-
-    function executeLogin() {
-        const u = document.getElementById('usr_in').value;
-        const p = document.getElementById('pwd_in').value;
-        
-        if(u === ADMIN_USR && p === ADMIN_PWD) {
-            playFinish();
-            return enterApp(true);
+        if(user === OWNER && pass === PASS) {
+            playSfx();
+            return enter(true);
         }
         
-        const data = JSON.parse(localStorage.getItem('upwd_' + u));
-        if(data && data.pass === p && !data.banned) {
-            playFinish();
-            return enterApp(false);
+        const data = JSON.parse(localStorage.getItem('cyber_' + user));
+        if(data && data.pw === pass) {
+            if(data.b) return alert("ID TERMINATED");
+            playSfx();
+            return enter(false);
         }
-        
-        vibrateDevice();
         alert("ACCESS DENIED");
     }
 
-    function enterApp(isAdmin) {
+    function enter(isAdmin) {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-app').style.display = 'grid';
-        document.getElementById('user-indicator').style.display = 'block';
+        document.getElementById('hub').style.display = 'block';
+        document.getElementById('stat').style.display = 'block';
+        document.getElementById('welc').innerText = "WELCOME, " + document.getElementById('u').value;
+        
         if(isAdmin) {
-            document.getElementById('admin-view').style.display = 'block';
-            renderUsers();
+            document.getElementById('admin').style.display = 'block';
+            loadUsers();
         }
     }
 
-    function renderUsers() {
-        const container = document.getElementById('user-list-container');
-        container.innerHTML = `<div class="user-card" style="color:var(--admin-gold)"><strong>${ADMIN_USR}</strong> (SYSTEM ROOT)</div>`;
-        for(let i=0; i<localStorage.length; i++){
+    function loadUsers() {
+        const list = document.getElementById('user-list');
+        list.innerHTML = `<div class="user-row" style="color:var(--admin-gold)"><span>👑 ${OWNER}</span> <span>(ROOT)</span></div>`;
+        
+        for(let i=0; i<localStorage.length; i++) {
             const k = localStorage.key(i);
-            if(k.startsWith('upwd_')){
-                const user = k.replace('upwd_', '');
+            if(k.startsWith('cyber_')) {
+                const u = k.replace('cyber_', '');
                 const d = JSON.parse(localStorage.getItem(k));
-                container.innerHTML += `
-                    <div class="user-card">
-                        $ ${user} | Pass: ${d.pass} <br><br>
-                        <button class="btn-danger" onclick="ban('${user}')">${d.banned ? 'UNBAN' : 'BAN'}</button>
-                        <button class="btn-danger" onclick="del('${user}')">DELETE</button>
+                list.innerHTML += `
+                    <div class="user-row">
+                        <span>$ ${u} | PW: ${d.pw}</span>
+                        <button class="btn-ban" onclick="rem('${u}')">DELETE</button>
                     </div>`;
             }
         }
     }
 
-    function ban(u) {
-        let d = JSON.parse(localStorage.getItem('upwd_' + u));
-        d.banned = !d.banned;
-        localStorage.setItem('upwd_' + u, JSON.stringify(d));
-        vibrateDevice();
-        renderUsers();
+    function rem(u) {
+        localStorage.removeItem('cyber_' + u);
+        loadUsers();
     }
 
-    function del(u) {
-        if(confirm("Confirm deletion?")) {
-            localStorage.removeItem('upwd_' + u);
-            vibrateDevice();
-            renderUsers();
-        }
-    }
-
-    function showLinks() {
-        playFinish();
-        document.getElementById('main-app').style.display = 'none';
-        document.getElementById('links-page').style.display = 'block';
-        const list = document.getElementById('links-list');
-        list.innerHTML = "";
-        proxyLinks.forEach((url, i) => {
-            list.innerHTML += `
-                <div class="proxy-card pop-effect" style="display:flex; justify-content:space-between; align-items:center; text-align:left;">
-                    <div><strong>OVERCLOAKED #${i+1}</strong><br><small style="color:#555">Ready for tunnel</small></div>
-                    <button class="launch-btn" style="width:auto; padding:10px 25px;" onclick="window.open('${url}', '_blank')">CONNECT</button>
-                </div>`;
-        });
-    }
-
-    function goHome() {
-        document.getElementById('links-page').style.display = 'none';
-        document.getElementById('main-app').style.display = 'grid';
-    }
-
-    // MATRIX BG
-    const canvas = document.getElementById('matrix');
+    // Binary Rain
+    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-    const drops = Array(Math.floor(canvas.width/16)).fill(1);
+    const columns = Math.floor(canvas.width/16);
+    const drops = Array(columns).fill(1);
+
     function draw() {
-        ctx.fillStyle = "rgba(10, 14, 26, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#00ff41"; ctx.font = "16px monospace";
+        ctx.fillStyle = "rgba(10, 14, 26, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0";
+        ctx.font = "16px monospace";
         drops.forEach((y, i) => {
-            ctx.fillText(Math.round(Math.random()), i * 16, y * 16);
-            if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            const char = Math.floor(Math.random()*2);
+            ctx.fillText(char, i*16, y*16);
+            if(y*16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
             drops[i]++;
         });
     }
-    setInterval(draw, 30);
+    setInterval(draw, 35);
 </script>
 </body>
 </html>
