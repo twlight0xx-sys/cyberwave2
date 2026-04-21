@@ -23,45 +23,24 @@
         .btn { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; cursor: pointer; border: 2px solid var(--green); background: transparent; color: var(--green); font-weight: bold; }
         .btn-login { border-color: var(--blue); color: var(--blue); }
 
-        /* --- FIXED SIDEBAR SYSTEM --- */
+        /* FIXED SIDEBAR */
         #app { display: none; height: 100vh; width: 100%; position: relative; }
-        
-        .side-panel { 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 260px;
-            height: 100%;
-            background: var(--sidebar-bg); 
-            border-right: 1px solid #1a2234; 
-            padding: 40px 20px; 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 100;
-        }
-        
-        .nav-item { 
-            padding: 15px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            color: #666; 
-            transition: 0.2s; 
-            margin-bottom: 10px;
-            font-size: 14px;
-            border: 1px solid transparent;
-        }
+        .side-panel { position: fixed; top: 0; left: 0; width: 260px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid #1a2234; padding: 40px 20px; display: flex; flex-direction: column; z-index: 100; }
+        .nav-item { padding: 15px; border-radius: 10px; cursor: pointer; color: #666; transition: 0.2s; margin-bottom: 10px; font-size: 14px; border: 1px solid transparent; }
         .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .nav-item.active { background: rgba(0, 255, 65, 0.1); color: var(--green); border-color: var(--green); }
 
-        .main-view { 
-            margin-left: 260px; /* Pushes content to the right of the sidebar */
-            padding: 60px; 
-            height: 100vh;
-            overflow-y: auto; 
-        }
+        .main-view { margin-left: 260px; padding: 60px; height: 100vh; overflow-y: auto; }
 
-        .card { background: #0d1117; border: 1px solid #30363d; padding: 25px; border-radius: 12px; margin-bottom: 20px; transition: 0.3s; }
-        .card:hover { border-color: var(--green); }
+        /* COLLAPSIBLE SYSTEM */
+        .collapsible { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+        .collapsible-header { background: #161b22; padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; }
+        .collapsible-header:hover { background: #1c2128; }
+        .collapsible-content { display: none; padding: 20px; background: #0d1117; }
+        .collapsible-content.active { display: block; }
+
+        .proxy-link-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #1a2234; }
+        .proxy-link-row:last-child { border-bottom: none; }
         
         .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #1a2234; }
         .btn-small { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; border-radius: 4px; cursor: pointer; }
@@ -86,32 +65,40 @@
 <div id="app">
     <div class="side-panel">
         <h2 style="color:var(--green); margin-bottom: 40px; letter-spacing: 2px;">CYBERWAVE</h2>
-        
-        <div class="nav-item active" id="nav-mirrors" onclick="switchTab('mirrors')">🌐 MIRRORS</div>
+        <div class="nav-item active" id="nav-proxies" onclick="switchTab('proxies')">🌐 PROXIES</div>
         <div id="admin-nav" class="nav-item" style="display:none;" onclick="switchTab('admin')">🔑 ROOT_ACCESS</div>
-        
-        <div class="nav-item" style="margin-top: auto; color: var(--red); border-color: rgba(255,0,0,0.2);" onclick="location.reload()">LOGOUT</div>
+        <div class="nav-item" style="margin-top: auto; color: var(--red);" onclick="location.reload()">LOGOUT</div>
     </div>
 
     <div class="main-view">
-        <div id="view-mirrors" class="pop">
-            <h1 style="margin-bottom: 30px;">Active Sectors</h1>
-            <div class="card">
-                <h3>Nebula Mirror</h3>
-                <p style="color:#555">Connection: Encrypted</p>
-                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH TUNNEL</button>
-            </div>
-            <div class="card">
-                <h3>Vapor Sector</h3>
-                <p style="color:#555">Connection: Direct</p>
-                <button class="btn btn-login" style="width:auto; padding: 10px 30px;" onclick="window.open('https://mathedu.netcrypto.org/')">LAUNCH TUNNEL</button>
+        <div id="view-proxies" class="pop">
+            <h1 style="margin-bottom: 30px;">Network Exit Nodes</h1>
+            
+            <div class="collapsible">
+                <div class="collapsible-header" onclick="toggleCollapsible()">
+                    <span style="color:var(--blue); font-size: 18px;">⚡ OVERCLOAKED [UNBLOCKED]</span>
+                    <span id="arrow">▼</span>
+                </div>
+                <div class="collapsible-content" id="proxy-list">
+                    <div class="proxy-link-row">
+                        <span>Static Node #1</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="window.open('https://overdih.netcrypto.org/')">LAUNCH</button>
+                    </div>
+                    <div class="proxy-link-row">
+                        <span>Static Node #2</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="window.open('https://mathedu.netcrypto.org/')">LAUNCH</button>
+                    </div>
+                    <div class="proxy-link-row">
+                        <span>Vapor Tunnel</span>
+                        <button class="btn btn-login" style="width:auto; padding: 5px 15px;" onclick="window.open('https://rariripsck.vngeek.com/')">LAUNCH</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div id="view-admin" class="pop" style="display:none;">
             <h1 style="color:var(--admin-gold); margin-bottom: 30px;">User Database</h1>
-            <div id="user-list" class="card">
-                </div>
+            <div id="user-list" class="collapsible" style="padding:10px;"></div>
         </div>
     </div>
 </div>
@@ -121,68 +108,61 @@
     const PASS = "_techyy";
     const chime = new Audio('https://actions.google.com/sounds/v1/communication/notification_simple_01.ogg');
 
-    function playSfx() {
-        chime.currentTime = 0;
-        chime.play().catch(() => {});
-        if(navigator.vibrate) navigator.vibrate(100);
+    function toggleCollapsible() {
+        const content = document.getElementById('proxy-list');
+        const arrow = document.getElementById('arrow');
+        content.classList.toggle('active');
+        arrow.innerText = content.classList.contains('active') ? '▲' : '▼';
     }
 
     function register() {
         const user = document.getElementById('u').value.trim();
         const pass = document.getElementById('p').value;
         if(!user || !pass) return;
-        if(user === OWNER) return alert("System ID Reserved");
         localStorage.setItem('cyber_' + user, JSON.stringify({pw: pass, b: false}));
-        playSfx(); alert("Registration Successful.");
+        chime.play(); alert("Local ID Created.");
     }
 
     function login() {
         const user = document.getElementById('u').value.trim();
         const pass = document.getElementById('p').value;
-        if(user === OWNER && pass === PASS) { playSfx(); return enter(true); }
+        if(user === OWNER && pass === PASS) { chime.play(); return enter(true); }
         const data = JSON.parse(localStorage.getItem('cyber_' + user));
-        if(data && data.pw === pass) { playSfx(); return enter(false); }
+        if(data && data.pw === pass) { chime.play(); return enter(false); }
         alert("ACCESS DENIED");
     }
 
     function enter(isAdmin) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        if(isAdmin) {
-            document.getElementById('admin-nav').style.display = 'block';
-            loadUsers();
-        }
+        if(isAdmin) { document.getElementById('admin-nav').style.display = 'block'; loadUsers(); }
     }
 
     function switchTab(tab) {
-        document.getElementById('view-mirrors').style.display = 'none';
+        document.getElementById('view-proxies').style.display = 'none';
         document.getElementById('view-admin').style.display = 'none';
-        
-        document.getElementById('nav-mirrors').classList.remove('active');
+        document.getElementById('nav-proxies').classList.remove('active');
         document.getElementById('admin-nav').classList.remove('active');
-        
         document.getElementById('view-' + tab).style.display = 'block';
-        document.getElementById('nav-' + (tab === 'mirrors' ? 'mirrors' : 'admin')).classList.add('active');
-        
-        if(tab === 'admin') loadUsers();
+        document.getElementById('nav-' + (tab === 'proxies' ? 'proxies' : 'admin')).classList.add('active');
     }
 
     function loadUsers() {
         const list = document.getElementById('user-list');
-        list.innerHTML = `<div class="user-row" style="color:var(--admin-gold); border-bottom: 2px solid var(--admin-gold); padding-bottom: 20px; margin-bottom: 10px;"><span>👑 ${OWNER}</span> <span>(SYSTEM ROOT)</span></div>`;
+        list.innerHTML = `<div class="user-row" style="color:var(--admin-gold)">👑 ${OWNER} (ROOT)</div>`;
         for(let i=0; i<localStorage.length; i++) {
             const k = localStorage.key(i);
             if(k.startsWith('cyber_')) {
                 const u = k.replace('cyber_', '');
                 const d = JSON.parse(localStorage.getItem(k));
-                list.innerHTML += `<div class="user-row"><span>$ ${u} | PW: ${d.pw}</span><button class="btn-small" onclick="rem('${u}')">DELETE</button></div>`;
+                list.innerHTML += `<div class="user-row"><span>$ ${u} | PW: ${d.pw}</span><button class="btn-small" onclick="rem('${u}')">DEL</button></div>`;
             }
         }
     }
 
     function rem(u) { localStorage.removeItem('cyber_' + u); loadUsers(); }
 
-    // Matrix Background
+    // Matrix
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
